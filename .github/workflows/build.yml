@@ -1,0 +1,56 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-chrome-web-store:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '15.x'
+      - run: npm install
+      - run: npm run build:chrome
+        env:
+          NODE_ENV: production
+          ENVIRONMENT: production
+          SERVICE_URL: https://syncshare.herokuapp.com
+          ANALYTICS_URL: https://naloaty-analytics.herokuapp.com
+          ANALYTICS_ID: 4526d766-2ab3-48f1-b809-69070c5c5305
+      - uses: actions/upload-artifact@v2
+        with:
+          name: chrome-web-store
+          path: browsers/chrome/distr
+          retention-days: 5
+
+  build-firefox:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '15.x'
+      - run: npm install
+      - run: npm run build:firefox
+        env:
+          NODE_ENV: production
+          ENVIRONMENT: production
+          SERVICE_URL: https://syncshare.herokuapp.com
+          ANALYTICS_URL: https://naloaty-analytics.herokuapp.com
+          ANALYTICS_ID: 4526d766-2ab3-48f1-b809-69070c5c5305
+      - uses: actions/upload-artifact@v2
+        with:
+          name: firefox-production
+          path: browsers/firefox/distr
+          retention-days: 5
