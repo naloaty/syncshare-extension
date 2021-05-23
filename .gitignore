@@ -1,0 +1,6 @@
+/browsers/*/distr
+
+.env
+.env.*
+
+/node_modules/

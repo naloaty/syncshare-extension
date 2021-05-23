@@ -1,0 +1,40 @@
+{
+    "name": "syncshare-extension",
+    "version": "0.1.6",
+    "description": "Moodle assist",
+    "main": "index.js",
+    "scripts": {
+        "watch:chrome": "cross-env NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
+        "watch:firefox": "cross-env NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/firefox/webpack/webpack.dev.js --watch",
+        "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
+        "build:firefox": "npx webpack --config browsers/firefox/webpack/webpack.prod.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Naloaty/syncshare.git"
+    },
+    "keywords": [
+        "moodle",
+        "quiz"
+    ],
+    "author": "Naloaty <naloaty.mail@gmail.com>",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Naloaty/syncshare/issues"
+    },
+    "homepage": "https://github.com/Naloaty/syncshare#readme",
+    "devDependencies": {
+        "@drmikecrowe/webpack-extension-reloaderv5": "^1.2.2",
+        "clean-webpack-plugin": "^4.0.0-alpha.0",
+        "copy-webpack-plugin": "^9.0.0",
+        "cross-env": "^7.0.3",
+        "webextension-polyfill": "^0.8.0",
+        "webpack": "^5.37.1",
+        "webpack-cli": "^4.7.0",
+        "webpack-merge": "^5.7.3",
+        "webpack-target-webextension": "^0.4.0"
+    },
+    "dependencies": {
+        "dotenv": "^10.0.0"
+    }
+}
