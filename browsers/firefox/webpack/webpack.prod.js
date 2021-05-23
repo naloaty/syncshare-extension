@@ -22,7 +22,7 @@ const firefoxProdConfig = {
                     transform(content) {
                         const manifest = JSON.parse(content.toString());
                         
-                        manifest.version = process.env.NPM_PACKAGE_VERSION;
+                        manifest.version = process.env.npm_package_version;
 
                         const services = [
                             process.env.SERVICE_URL + "/*",

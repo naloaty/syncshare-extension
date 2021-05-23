@@ -23,7 +23,7 @@ const chromeDevConfig = {
                         const manifest = JSON.parse(content.toString());
 
                         manifest.name = "SyncShare - Development";
-                        manifest.version = process.env.NPM_PACKAGE_VERSION;
+                        manifest.version = process.env.npm_package_version;
 
                         const services = [
                             process.env.SERVICE_URL
