@@ -1,3 +1,5 @@
+/* eslint-env node */
+
 const path = require("path");
 const webpack = require("webpack");
 const dotenv = require("dotenv");
@@ -35,7 +37,8 @@ const commonConfig = {
         mainFields: ["browser", "module", "main"],
         aliasFields: ["browser"],
         alias: {
-            "@": path.resolve(rootDir, "src"),
+            Internal: path.resolve(rootDir, "src/internal"),
+            Utils: path.resolve(rootDir, "src/utils"),
             node_modules: path.resolve(rootDir, "node_modules")
         },
         extensions: [".js"]
