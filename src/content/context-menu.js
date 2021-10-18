@@ -33,7 +33,6 @@ const attachContextMenu = (() => {
         item.addEventListener("click", e => {
             e.stopPropagation();
             if (!opt.subMenu || opt.subMenu.length === 0) {
-                window.umami.trackEvent("Magic value fill", Events.click);
                 opt.callback(opt);
                 hideMenu(true);
             }
@@ -90,7 +89,6 @@ const attachContextMenu = (() => {
     return (el, options) => {
         el.setAttribute("ctx-menu", "true");
         el.addEventListener("click", (e) => {
-            window.umami.trackEvent("Magic menu open", Events.click);
             showMenu(e, options);
         });
     };
