@@ -8,25 +8,23 @@
   position: fixed;
   background: #fff;
   z-index: 9999999;
-  width: 120px;
+  width: 150px;
   margin: 0;
   padding: 5px 0;
   border-radius: 2px;
   box-shadow: 0 0 6px rgba(0,0,0,0.2);
   font-size: 12px;
   font-family: sans-serif;
-}
-
+} 
 .context-menu .context-menu-item {
-  height: 30px;
+  height: 20px;
   display: flex;
   align-items: center;
   padding: 6px 10px;
   cursor: pointer;
   position: relative;
   border-bottom: 1px solid #f2f2f2;
-}
-
+} 
 .context-menu .context-menu-item span {
   display: block;
   white-space: nowrap;
@@ -34,13 +32,27 @@
   text-overflow: ellipsis;
 }
 
+.context-menu .context-menu-item .post-icon,
+.context-sub-menu .context-menu-item .post-icon {
+   margin-left: auto;
+   padding: 3px 3px;
+   border-radius: 2px;
+} 
+
+.context-menu .context-menu-item .pre-icon,
+.context-sub-menu .context-menu-item .pre-icon {
+   margin-right: 6px;
+   padding: 3px 3px;
+   border-radius: 2px;
+} 
+
 .context-menu-item:last-of-type {
   border-bottom: none;
-}
+} 
 
 .context-menu .context-menu-item:hover {
   background: #f2f2f2;
-}
+} 
 
 .context-menu .context-sub-menu {
   position: absolute;
@@ -48,21 +60,21 @@
   left: 100%;
   display: none;
   width: 150px;
-}
+} 
 
 .context-menu .context-menu-item:hover > .context-sub-menu {
   display: block;
-}
+} 
 
 .context-menu.left .context-sub-menu {
   left: 0;
   transform: translateX(-100%);
-}
+} 
 
 .context-menu.top .context-sub-menu {
   top: 100%;
   transform: translateY(-100%);
-}
+} 
 
 .context-menu.left.top .context-sub-menu {
   transform: translate(-100%, -100%);

@@ -3,8 +3,6 @@
  * Codepen: https://codepen.io/beforesemicolon
  */
 
-import { Events } from  "@/core/analytics.js"
-
 const attachContextMenu = (() => {
     const contextMenu = document.createElement("ul");
     let isShown = false;
@@ -15,32 +13,63 @@ const attachContextMenu = (() => {
         if (!isShown)
             return;
 
-        if (e.target && e.target.getAttribute("ctx-menu"))
+        if (e?.target?.getAttribute("ctx-menu"))
             return;
 
         if (e === true || !contextMenu.contains(e.target)) {
+            isShown = false;
             contextMenu.remove();
             document.removeEventListener("click", hideMenu);
             window.removeEventListener("resize", hideOnResize);
-            isShown = false;
         }
-    };
+    }
 
-    const attachOption = (target, opt) => {
+    const attachOption = (menu, opt) => {
+        const hasSubMenu = opt.subMenu && opt.subMenu.length > 0;
+
         const item = document.createElement("li");
         item.className = "context-menu-item";
-        item.innerHTML = `<span>${opt.label}</span>`;
+
+        let iconHTML = ``;
+
+        if (opt.icon) {
+            const icon = opt.icon;
+
+            const styles = [
+                icon.textColor ? `color: ${icon.textColor};` : '',
+                icon.backColor ? `background-color: ${icon.backColor};` : ''
+            ].join('');
+
+            const style = styles ? `style="${styles}"` : ''; 
+            const klass = icon.alignRight ? "post-icon" : "pre-icon"; 
+
+            if (icon.name && !icon.text) 
+                iconHTML += `<span ${style} class="${klass} icon fa ${icon.name} fa-fw"></span>`;
+
+            if (icon.text && !icon.name)
+                iconHTML += `<span ${style} class="${klass}">${icon.text}</span>`;
+        }
+
+        const optionText = `<span>${opt.label}</span>`;
+
+        let innerHTML = opt?.icon?.alignRight ? optionText + iconHTML : iconHTML + optionText;
+
+        if (hasSubMenu)
+            innerHTML += `<span class="post-icon icon fa fa-angle-right fa-fw"></span>`
+
+        item.innerHTML = innerHTML;
+
         item.addEventListener("click", e => {
             e.stopPropagation();
-            if (!opt.subMenu || opt.subMenu.length === 0) {
-                opt.callback(opt);
+            if (!hasSubMenu) {
+                if (opt.action) opt.action(opt);
                 hideMenu(true);
             }
         });
 
-        target.appendChild(item);
+        menu.appendChild(item);
 
-        if (opt.subMenu && opt.subMenu.length) {
+        if (hasSubMenu) {
             const subMenu = document.createElement("ul");
             subMenu.className = "context-sub-menu";
             item.appendChild(subMenu);
@@ -55,6 +84,7 @@ const attachContextMenu = (() => {
 
         contextMenu.className = "context-menu";
         contextMenu.innerHTML = "";
+
         menuOptions.forEach(opt => attachOption(contextMenu, opt))
         document.body.appendChild(contextMenu);
 
@@ -86,12 +116,11 @@ const attachContextMenu = (() => {
         window.addEventListener("resize", hideOnResize);
     };
 
-    return (el, options) => {
-        el.setAttribute("ctx-menu", "true");
-        el.addEventListener("click", (e) => {
-            showMenu(e, options);
-        });
+    return (element, options) => {
+        element.setAttribute("ctx-menu", "true");
+        element.addEventListener("click", e => showMenu(e, options));
     };
+
 })();
 
-export { attachContextMenu };
+export { attachContextMenu }
