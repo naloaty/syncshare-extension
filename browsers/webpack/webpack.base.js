@@ -39,6 +39,9 @@ const commonConfig = {
         alias: {
             Internal: path.resolve(rootDir, "src/internal"),
             Utils: path.resolve(rootDir, "src/utils"),
+            Parsers: path.resolve(rootDir, "src/parsers"),
+            Pages: path.resolve(rootDir, "src/pages"),
+            Widgets: path.resolve(rootDir, "src/pages"),
             node_modules: path.resolve(rootDir, "node_modules")
         },
         extensions: [".js"]
