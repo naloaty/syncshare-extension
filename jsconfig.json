@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+      "target": "es2020",
+      "allowSyntheticDefaultImports": false,
+      "baseUrl": "./",
+      "paths": {
+        "Internal/*": ["src/internal/*"],
+        "Utils/*": ["src/utils/*"],
+        "Parsers/*": ["src/parsers/*"],
+        "Pages/*": ["src/pages/*"],
+        "Widgets/*": ["src/widgets/*"]
+      }
+    },
+    "exclude": ["node_modules", "browsers/*/dist"]
+}
