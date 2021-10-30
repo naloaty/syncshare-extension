@@ -2,8 +2,8 @@ import Mediator from "@/core/transport.js";
 import { log } from "@/core/log.js";
 
 const server = SERVICE_URL;
-const attemptApi = "/api/quiz/attempt";
-const solutionApi = "/api/quiz/solution"
+const attemptApi = "/quiz/attempt";
+const solutionApi = "/quiz/solution"
 
 const getApi = (uri) => {
     return server + uri;

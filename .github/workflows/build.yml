@@ -24,8 +24,8 @@ jobs:
         env:
           NODE_ENV: production
           ENVIRONMENT: production
-          SERVICE_URL: https://syncshare.herokuapp.com
-          ANALYTICS_URL: https://naloaty-analytics.herokuapp.com
+          SERVICE_URL: https://syncshare.naloaty.me/api
+          ANALYTICS_URL: https://syncshare.naloaty.me/analytics
           ANALYTICS_ID: 4526d766-2ab3-48f1-b809-69070c5c5305
       - uses: actions/upload-artifact@v2
         with:
@@ -46,8 +46,8 @@ jobs:
         env:
           NODE_ENV: production
           ENVIRONMENT: production
-          SERVICE_URL: https://syncshare.herokuapp.com
-          ANALYTICS_URL: https://naloaty-analytics.herokuapp.com
+          SERVICE_URL: https://syncshare.naloaty.me/api
+          ANALYTICS_URL: https://syncshare.naloaty.me/analytics
           ANALYTICS_ID: 4526d766-2ab3-48f1-b809-69070c5c5305
       - uses: actions/upload-artifact@v2
         with:
