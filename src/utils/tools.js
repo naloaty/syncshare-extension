@@ -179,12 +179,7 @@ function getState(classList) {
     return -1;
 }
 
-function createMagicButton() {
-    const btn = document.createElement("span");
-    btn.className = "ss-btn icon fa fa-magic fa-fw";
 
-    return btn;
-}
 
 function findMagicButton(node) {
     return node.querySelector("span .ss-btn .icon");
@@ -230,6 +225,6 @@ function verifyRightAnswer(text) {
 export {
     hashString, packImages, washString, decodeFano,
     findAppropriate, findByText, forEach, includes,
-    States, stateToWord, getState, createMagicButton,
+    States, stateToWord, getState,
     findMagicButton, desc_len, getUUID, verifyRightAnswer
 }
