@@ -1,8 +1,7 @@
 {
     "manifest_version": 2,
     "name": "SyncShare",
-    "version": "0.1.5",
-    "description": "Helps to share and synchronize answers to Moodle learning platform quizzes across all users using this extension.",
+    "description": "Synchronize and share right answers to Moodle quizzes.",
     "icons": {
         "16": "icons/syncshare_16x16.png",
         "24": "icons/syncshare_24x24.png",
