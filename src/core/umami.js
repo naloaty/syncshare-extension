@@ -1,3 +1,5 @@
+import { sessionStorage } from "@/core/session-storage.js";
+
 (function () {
   'use strict';
 
@@ -46,7 +48,11 @@
     var pathname = window_location.pathname;
     var search = window_location.search;
     var localStorage = window.localStorage;
-    var sessionStorage = window.sessionStorage;
+
+    // sessionStorage is different for background and content scripts.
+    // This is why we use only sessionStorage on background page (Mediator)
+    // var sessionStorage = window.sessionStorage;
+
     var document = window.document;
     var history = window.history;
 
@@ -64,7 +70,7 @@
 
     var autoTrack = true;
     var dnt = undefined;
-    var useCache = false;
+    var useCache = true;
     var domains = undefined;
 
     var disableTracking =
@@ -100,7 +106,7 @@
       req.send(JSON.stringify(data));
     };
 
-    var collect = function (type, params, uuid) {
+    var collect = async function (type, params, uuid) {
       if (disableTracking) { return; }
 
       var key = 'umami.cache';
@@ -110,7 +116,7 @@
         hostname: hostname,
         screen: screen,
         language: language,
-        cache: useCache && sessionStorage.getItem(key),
+        cache: useCache && await sessionStorage.getItem(key),
       };
 
       if (params) {

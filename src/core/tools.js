@@ -227,9 +227,14 @@ function verifyRightAnswer(text) {
         return true;
 }
 
+function getRandomBounds(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
 export {
     hashString, packImages, washString, decodeFano,
     findAppropriate, findByText, forEach, includes,
     States, stateToWord, getState, createMagicButton,
-    findMagicButton, desc_len, getUUID, verifyRightAnswer
+    findMagicButton, desc_len, getUUID, verifyRightAnswer,
+    getRandomBounds
 }

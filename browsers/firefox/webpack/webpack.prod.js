@@ -34,7 +34,7 @@ const firefoxProdConfig = {
 
                         manifest.browser_specific_settings = {
                             gecko: {
-                                id: "syncshare@naloaty.com",
+                                id: "syncshare@naloaty.me",
                                 update_url: "https://naloaty.github.io/syncshare/updates.json"
                             }
                         }

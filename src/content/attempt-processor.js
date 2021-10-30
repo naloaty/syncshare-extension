@@ -17,7 +17,7 @@ const Page = (() => {
 
     /* courseId, courseName, quizName */
     const parseBreadcrumb = () => {
-        const links = document.querySelectorAll("ol.breadcrumb a");
+        const links = document.querySelectorAll(".breadcrumb a");
         const result = {}
 
         for (let link of links) {
