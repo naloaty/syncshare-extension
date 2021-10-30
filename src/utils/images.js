@@ -12,7 +12,7 @@ function serialize(img) {
         filename = img.src.slice(fnBegin + 1);
  
     const alt = img.alt || "[NO ALT]";
-    return filename + ';' + alt + ';';
+    return filename + ';' + alt
 }
 
 export { serialize }
