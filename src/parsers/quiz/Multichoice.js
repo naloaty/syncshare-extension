@@ -1,7 +1,8 @@
 import Question from "Parsers/quiz/Question"
 import { removeInvisible } from "Utils/strings"
-import * as Images from "Utils/images"
+import * as Image from "Utils/images"
 import * as Sign from "Utils/signature"
+import * as Array from "Utils/arrays"
 import ssdeep from "Utils/ssdeep"
 import createMagicButton from "Widgets/MagicButton"
 
@@ -13,39 +14,40 @@ class Multichoice extends Question {
         const answer = this.container.querySelector("div.answer");
         const inputs = answer.querySelectorAll("input[type=\"radio\"], input[type=\"checkbox\"]");
 
-        this.answerDiv = answer;
-        this.type = inputs[0].type;
-        this.map = {};
+        this.options   = {};
+        this.answer    = answer;
+        this.type      = inputs[0].type;
 
-        for (const input of inputs) {
+        Array.forEach(inputs, input => {
             const label = input.nextSibling;
 
             let meta = removeInvisible(label.lastChild.textContent);
 
-            for (const image of label.querySelectorAll("img"))
-                meta += Images.serialize(image);
+            Array.forEach(label.querySelectorAll("img"), image => {
+                meta += Image.serialize(image) + ";";
+            }); 
 
-            this.map[ssdeep.digest(meta)] = input;
-        }
+            this.options[ssdeep.digest(meta)] = input;
+        });
     }
 
     createWidgetAnchor(anchor) {
         if (this.type === "radio") {
             const button = createMagicButton();
-            this.answerDiv.appendChild(button);
+            this.answer.appendChild(button);
 
             const onClick = (data) => {
-                let choice = this.map[data.signature];
+                let choice = this.options[data.signature];
 
                 // Try to find similar nodes in case 
                 // the text of the question has changed
                 if (!choice) {
-                    const similar = Sign.findSimilar(data.signature, Object.keys(this.map));
+                    const similar = Sign.findSimilar(data.signature, Object.keys(this.options));
 
                     // If there are several similar values
                     // then anchoring is not possible
                     if (similar.length == 1)
-                        choice = this.map[similar[0]];
+                        choice = this.options[similar[0]];
                 }
 
                 if (choice)
@@ -55,17 +57,17 @@ class Multichoice extends Question {
             return { onClick, button };
         }
         else if (this.type === "checkbox") {
-            let choice = this.map[anchor];
+            let choice = this.options[anchor];
 
             // Try to find similar nodes in case 
             // the text of the question has changed
             if (!choice) {
-                const similar = Sign.findSimilar(anchor, Object.keys(this.map));
+                const similar = Sign.findSimilar(anchor, Object.keys(this.options));
     
                 // If there are several similar values
                 // then anchoring is not possible
                 if (similar.length == 1)
-                    choice = this.map[similar[0]];
+                    choice = this.options[similar[0]];
             }
     
             if (!choice)
