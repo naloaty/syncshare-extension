@@ -35,12 +35,12 @@ class Match extends Question {
     }
 
     createWidgetAnchor(anchor) {
-        let select = this.labels[anchor];
+        let select = this.labels[anchor.signature];
 
         // Try to find similar nodes in case 
         // the text of the question has changed
         if (!select) {
-            const similar = Sign.findSimilar(anchor, Object.keys(this.labels));
+            const similar = Sign.findSimilar(anchor.signature, Object.keys(this.labels));
 
             // If there are several similar values
             // then anchoring is not possible

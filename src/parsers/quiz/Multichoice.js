@@ -55,12 +55,12 @@ class Multichoice extends Question {
             return { onClick, button };
         }
         else if (this.type === "checkbox") {
-            let choice = this.options[anchor];
+            let choice = this.options[anchor.signature];
 
             // Try to find similar nodes in case 
             // the text of the question has changed
             if (!choice) {
-                const similar = Sign.findSimilar(anchor, Object.keys(this.options));
+                const similar = Sign.findSimilar(anchor.signature, Object.keys(this.options));
     
                 // If there are several similar values
                 // then anchoring is not possible
