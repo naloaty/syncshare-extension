@@ -2,7 +2,6 @@ import Question from "Parsers/quiz/Question"
 import { removeInvisible } from "Utils/strings"
 import * as Image from "Utils/images"
 import * as Sign from "Utils/signature"
-import * as Array from "Utils/arrays"
 import ssdeep from "Utils/ssdeep"
 import createMagicButton from "Widgets/MagicButton"
 
@@ -18,17 +17,16 @@ class Multichoice extends Question {
         this.answer    = answer;
         this.type      = inputs[0].type;
 
-        Array.forEach(inputs, input => {
+        for (const input of inputs) {
             const label = input.nextSibling;
 
-            let meta = removeInvisible(label.lastChild.textContent);
+            const meta = [
+                removeInvisible(label.lastChild.textContent),
+                Image.serializeArray(label.querySelectorAll("img"))
+            ];
 
-            Array.forEach(label.querySelectorAll("img"), image => {
-                meta += Image.serialize(image) + ";";
-            }); 
-
-            this.options[ssdeep.digest(meta)] = input;
-        });
+            this.options[ssdeep.digest(meta.join(";"))] = input;
+        }
     }
 
     createWidgetAnchor(anchor) {

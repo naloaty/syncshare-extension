@@ -1,7 +1,6 @@
 import Question from "Parsers/quiz/Question"
 import ssdeep from "Utils/ssdeep"
 import * as Image from "Utils/images"
-import * as Array from "Utils/arrays"
 import { removeInvisible } from "Utils/strings";
 
 class Multianswer extends Question {
@@ -20,10 +19,12 @@ class Multianswer extends Question {
         this.multichoice = {};    
 
         /* Shortanswer & numerical subquestion type */
-        Array.forEach(edits, node => this.edit[getSlot(node)] = { node });
+        for (const node of edits) {
+            this.edit[getSlot(node)] = { node }
+        }
 
         /* Multichoice subquestion type */
-        Array.forEach(multichoices, mc => {
+        for (const mc of multichoices) {
             const inputs = mc.querySelectorAll("input[type=\"radio\"], input[type=\"checkbox\"]");
 
             const subQ = {
@@ -32,23 +33,22 @@ class Multianswer extends Question {
                 type: inputs[0].type,
             }
 
-            Array.forEach(inputs, input => {
+            for (const input of inputs) {
                 const label = input.nextSibling;
 
-                let meta = removeInvisible(label.lastChild.textContent);
-
-                Array.forEach(label.querySelectorAll("img"), image => {
-                    meta += Image.serialize(image);
-                });                    
+                const meta = [
+                    removeInvisible(label.lastChild.textContent),
+                    Image.serializeArray(label.querySelectorAll("img"))
+                ];                  
     
-                subQ.options[ssdeep.digest(meta)] = input;
-            });
+                subQ.options[ssdeep.digest(meta.join(";"))] = input;
+            }
 
             this.multichoice[getSlot(inputs[0])] = subQ;
-        });
+        }
 
         /* Gap select subquestion type */
-        Array.forEach(selects, select => {
+        for (const select of selects) {
             const subQ = {
                 node: select,
                 optionMap: {}
@@ -62,7 +62,7 @@ class Multianswer extends Question {
             }
 
             this.select[getSlot(select)] = subQ;
-        });
+        }
     }
 
     /*createWidgetAnchor(anchor) {

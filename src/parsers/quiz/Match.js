@@ -1,7 +1,6 @@
 import Question from "Parsers/quiz/Question"
-import * as Images from "Utils/images"
+import * as Image from "Utils/images"
 import * as Sign from "Utils/signature"
-import * as Array from "Utils/arrays"
 import createMagicButton from "Widgets/MagicButton"
 import { removeInvisible } from "Utils/strings"
 import ssdeep from "Utils/ssdeep"
@@ -18,21 +17,21 @@ class Match extends Question {
         this.labels  = {};
         this.options = {};
 
-        Array.forEach(selects[0].childNodes, option => {
+        for (const option of selects[0].childNodes) {
             this.options[option.innerText] = option.value;
-        });
+        }
 
-        Array.forEach(stems, (stem, i) => {
+        for (let i = 0; i < stems.length; i++) {
+            const stem   = stems[i];
             const select = selects[i];
 
-            let meta = removeInvisible(stem.innerText);
+            let meta = [
+                removeInvisible(stem.innerText),
+                Image.serializeArray(stem.querySelectorAll("img"))
+            ];
 
-            Array.forEach(stem.querySelectorAll("img"), image => {
-                meta += Images.serialize(image) + ";";
-            });
-
-            this.labels[ssdeep.digest(meta)] = select;
-        });
+            this.labels[ssdeep.digest(meta.join(";"))] = select;
+        }
     }
 
     createWidgetAnchor(anchor) {
