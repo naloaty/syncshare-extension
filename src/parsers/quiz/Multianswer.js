@@ -1,7 +1,9 @@
 import Question from "Parsers/quiz/Question"
 import ssdeep from "Utils/ssdeep"
 import * as Image from "Utils/images"
+import * as Sign from "Utils/signature"
 import { removeInvisible } from "Utils/strings";
+import createMagicButton from "Widgets/MagicButton"
 
 class Multianswer extends Question {
 
@@ -19,8 +21,8 @@ class Multianswer extends Question {
         this.multichoice = {};    
 
         /* Shortanswer & numerical subquestion type */
-        for (const node of edits) {
-            this.edit[getSlot(node)] = { node }
+        for (const input of edits) {
+            this.edit[getSlot(input)] = { input }
         }
 
         /* Multichoice subquestion type */
@@ -65,79 +67,82 @@ class Multianswer extends Question {
         }
     }
 
-    /*createWidgetAnchor(anchor) {
-        const subq = this.struct[attachTo.slot];
+    createWidgetAnchor(anchor) {
+        let subq = null;
 
-        if (!subq)
-            return null;
+        if (subq = this.select[anchor.index]) {
+            const button = createMagicButton();
+            subq.node.parentNode.appendChild(button);
 
-        if (subq.type === this.types.combo) {
-            let btn = findMagicButton(subq.select.parentNode);
-
-            if (!btn) {
-                btn = createMagicButton();
-                subq.select.parentNode.appendChild(btn);
+            const onClick = (data) => {
+                subq.node.value = subq.optionMap[data.text];
             }
 
-            const onClick = (value) => {
-                subq.select.value = subq.rchoices[value.text];
-            }
-
-            return { onClick, button: btn }
+            return { onClick, button };
         }
-        else if (subq.type === this.types.radio) {
-            let btn = findMagicButton(subq.base)
+        else if (subq = this.multichoice[anchor.index]) {
 
-            if (!btn) {
-                btn = createMagicButton();
-                subq.base.appendChild(btn);
+            if ("radio" === subq.type) {
+                const button = createMagicButton();
+                subq.answer.appendChild(button);
+
+                const onClick = (data) => {
+                    let choice = subq.options[data.signature];
+
+                    // Try to find similar nodes in case 
+                    // the text of the question has changed
+                    if (!choice) {
+                        const similar = Sign.findSimilar(data.signature, Object.keys(subq.options));
+    
+                        // If there are several similar values
+                        // then anchoring is not possible
+                        if (similar.length == 1)
+                            choice = subq.options[similar[0]];
+                    }
+    
+                    if (choice)
+                        choice.checked = true;
+                }
+
+                return { onClick, button };
+            }
+            
+            if ("checkbox" === subq.type) {
+                let choice = subq.options[anchor.signature];
+
+                // Try to find similar nodes in case 
+                // the text of the question has changed
+                if (!choice) {
+                    const similar = Sign.findSimilar(anchor.signature, Object.keys(subq.options));
+        
+                    // If there are several similar values
+                    // then anchoring is not possible
+                    if (similar.length == 1)
+                        choice = subq.options[similar[0]];
+                }
+        
+                if (!choice)
+                    return null;
+    
+                const button = createMagicButton();
+                choice.parentNode.insertBefore(button, choice.nextSibling);
+                const onClick = data => choice.checked = data.checked;
+    
+                return { onClick, button };
             }
 
-            //const choice = findAppropriate(attachTo, subq.choices);
-
-            const onClick = (value) => {
-                const choice = this.attachMap[value.uuid];
-
-                if (choice)
-                    choice.input.checked = true;
-            }
-
-            return { onClick, button: btn }
         }
-        else if (subq.type === this.types.check) {
-            const choice = findAppropriate(attachTo, subq.choices);
-
-            if (!choice)
-                return null;
-
-            let btn = findMagicButton(choice.input.parentNode);
-
-            if (!btn) {
-                btn = createMagicButton();
-                choice.input.parentNode.appendChild(btn);
-            }
-
-            const onClick = (value) => {
-                choice.input.checked = value.checked;
-            }
-
-            return { onClick, button: btn }
-        }
-        else if (subq.type === this.types.edit) {
-            let btn = findMagicButton(subq.input.parentNode);
-
-            if (!btn) {
-                btn = createMagicButton();
-                subq.input.parentNode.appendChild(btn);
-            }
+        else if (subq = this.edit[anchor.index]) {
+            const button = createMagicButton();
+            subq.input.parentNode.appendChild(button);
 
             const onClick = (value) => {
                 subq.input.value = value.text;
             }
 
-            return { onClick, button: btn }
+            return { onClick, button };
         }
-    }*/
+    }
 }
 
 export default Multianswer;
