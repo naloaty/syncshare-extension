@@ -10,7 +10,7 @@ class Question {
     * @typedef  SolutionItem Represents single menu option (or answer option)
     * @type     {Object}
     * @property {string} label String representation of answer option
-    * @property {Object} data  Quetion-specific data required to perform autofill 
+    * @property {Object} data  Question-specific data required to perform autofill 
     */
 
     /**
