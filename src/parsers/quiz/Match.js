@@ -51,12 +51,12 @@ class Match extends Question {
         select.parentNode.appendChild(button);
 
         const onClick = data => {
-            let option = this.options[data.text];
+            let option = this.options[data.sign];
 
             // Try to find similar options in case 
             // the text of the question has changed
             if (!option) {
-                const candidate = Strings.findSimilar(data.text, Object.keys(this.options));
+                const candidate = Strings.findSimilar(data.sign, Object.keys(this.options));
 
                 if (!candidate) {
                     return;

@@ -73,12 +73,12 @@ class Multianswer extends Question {
             subq.node.parentNode.appendChild(button);
 
             const onClick = (data) => {
-                let option = subq.optionMap[data.text];
+                let option = subq.optionMap[data.sign];
 
                 // Try to find similar options in case 
                 // the text of the question has changed
                 if (!option) {
-                    const candidate = Strings.findSimilar(data.text, Object.keys(subq.optionMap));
+                    const candidate = Strings.findSimilar(data.sign, Object.keys(subq.optionMap));
     
                     if (!candidate) {
                         return;
