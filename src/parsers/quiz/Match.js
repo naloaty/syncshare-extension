@@ -1,9 +1,7 @@
 import Question from "Parsers/quiz/Question"
-import * as Image from "Utils/images"
-import * as Sign from "Utils/signature"
+import * as Images from "Utils/images"
+import * as Strings from "Utils/strings"
 import createMagicButton from "Widgets/MagicButton"
-import { removeInvisible } from "Utils/strings"
-import ssdeep from "Utils/ssdeep"
 
 class Match extends Question {
 
@@ -25,36 +23,50 @@ class Match extends Question {
             const stem   = stems[i];
             const select = selects[i];
 
-            let meta = [
-                removeInvisible(stem.innerText),
-                Image.serializeArray(stem.querySelectorAll("img"))
+            let sign = [
+                Strings.removeInvisible(stem.innerText),
+                Images.serializeArray(stem.querySelectorAll("img"))
             ];
 
-            this.labels[ssdeep.digest(meta.join(";"))] = select;
+            this.labels[sign.join(";")] = select;
         }
     }
 
     createWidgetAnchor(anchor) {
-        let select = this.labels[anchor.signature];
+        let select = this.labels[anchor.sign];
 
         // Try to find similar nodes in case 
         // the text of the question has changed
         if (!select) {
-            const similar = Sign.findSimilar(anchor.signature, Object.keys(this.labels));
+            const candidate = Strings.findSimilar(anchor.sign, Object.keys(this.labels));
 
-            // If there are several similar values
-            // then anchoring is not possible
-            if (similar.length == 1)
-                select = this.labels[similar[0]];
+            if (!candidate) {
+                return;
+            }
+
+            select = this.labels[candidate];
         }
-
-        if (!select)
-            return null;
 
         const button = createMagicButton();
         select.parentNode.appendChild(button);
 
-        const onClick = data => select.value = this.options[data.text];
+        const onClick = data => {
+            let option = this.options[data.text];
+
+            // Try to find similar options in case 
+            // the text of the question has changed
+            if (!option) {
+                const candidate = Strings.findSimilar(data.text, Object.keys(this.options));
+
+                if (!candidate) {
+                    return;
+                }
+
+                option = this.options[candidate];
+            }
+
+            select.value = option;
+        };
 
         return { onClick, button };
     }

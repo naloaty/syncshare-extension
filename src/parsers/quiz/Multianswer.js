@@ -1,8 +1,6 @@
 import Question from "Parsers/quiz/Question"
-import ssdeep from "Utils/ssdeep"
-import * as Image from "Utils/images"
-import * as Sign from "Utils/signature"
-import { removeInvisible } from "Utils/strings";
+import * as Images from "Utils/images"
+import * as Strings from "Utils/strings";
 import createMagicButton from "Widgets/MagicButton"
 
 class Multianswer extends Question {
@@ -22,7 +20,7 @@ class Multianswer extends Question {
 
         /* Shortanswer & numerical subquestion type */
         for (const input of edits) {
-            this.edit[getSlot(input)] = { input }
+            this.edit[getSlot(input)] = { input };
         }
 
         /* Multichoice subquestion type */
@@ -38,12 +36,12 @@ class Multianswer extends Question {
             for (const input of inputs) {
                 const label = input.nextSibling;
 
-                const meta = [
-                    removeInvisible(label.lastChild.textContent),
-                    Image.serializeArray(label.querySelectorAll("img"))
+                const sign = [
+                    Strings.removeInvisible(label.lastChild.textContent),
+                    Images.serializeArray(label.querySelectorAll("img"))
                 ];                  
     
-                subQ.options[ssdeep.digest(meta.join(";"))] = input;
+                subQ.options[sign.join(";")] = input;
             }
 
             this.multichoice[getSlot(inputs[0])] = subQ;
@@ -60,7 +58,7 @@ class Multianswer extends Question {
                 if (!option.value)
                     continue;
 
-                subQ.optionMap[option.innerText] = removeInvisible(option.value);
+                subQ.optionMap[option.innerText] = Strings.removeInvisible(option.value);
             }
 
             this.select[getSlot(select)] = subQ;
@@ -70,59 +68,71 @@ class Multianswer extends Question {
     createWidgetAnchor(anchor) {
         let subq = null;
 
-        if (subq = this.select[anchor.index]) {
+        if ((subq = this.select[anchor.index])) {
             const button = createMagicButton();
             subq.node.parentNode.appendChild(button);
 
             const onClick = (data) => {
-                subq.node.value = subq.optionMap[data.text];
+                let option = subq.optionMap[data.text];
+
+                // Try to find similar options in case 
+                // the text of the question has changed
+                if (!option) {
+                    const candidate = Strings.findSimilar(data.text, Object.keys(subq.optionMap));
+    
+                    if (!candidate) {
+                        return;
+                    }
+    
+                    option = subq.optionMap[candidate];
+                }
+
+                subq.node.value = option;
             }
 
             return { onClick, button };
         }
-        else if (subq = this.multichoice[anchor.index]) {
+        else if ((subq = this.multichoice[anchor.index])) {
 
             if ("radio" === subq.type) {
                 const button = createMagicButton();
                 subq.answer.appendChild(button);
 
                 const onClick = (data) => {
-                    let choice = subq.options[data.signature];
+                    let choice = subq.options[data.sign];
 
                     // Try to find similar nodes in case 
                     // the text of the question has changed
                     if (!choice) {
-                        const similar = Sign.findSimilar(data.signature, Object.keys(subq.options));
-    
-                        // If there are several similar values
-                        // then anchoring is not possible
-                        if (similar.length == 1)
-                            choice = subq.options[similar[0]];
+                        const candidate = Strings.findSimilar(data.sign, Object.keys(subq.options));
+
+                        if (!candidate) {
+                            return;
+                        }
+
+                        choice = subq.options[candidate];
                     }
     
-                    if (choice)
-                        choice.checked = true;
+                    choice.checked = true;
                 }
 
                 return { onClick, button };
             }
             
             if ("checkbox" === subq.type) {
-                let choice = subq.options[anchor.signature];
+                let choice = subq.options[anchor.sign];
 
                 // Try to find similar nodes in case 
                 // the text of the question has changed
                 if (!choice) {
-                    const similar = Sign.findSimilar(anchor.signature, Object.keys(subq.options));
-        
-                    // If there are several similar values
-                    // then anchoring is not possible
-                    if (similar.length == 1)
-                        choice = subq.options[similar[0]];
+                    const candiate = Strings.findSimilar(anchor.signature, Object.keys(subq.options));
+
+                    if (!candiate) {
+                        return;
+                    }
+
+                    choice = subq.options[candiate];
                 }
-        
-                if (!choice)
-                    return null;
     
                 const button = createMagicButton();
                 choice.parentNode.insertBefore(button, choice.nextSibling);
@@ -132,7 +142,7 @@ class Multianswer extends Question {
             }
 
         }
-        else if (subq = this.edit[anchor.index]) {
+        else if ((subq = this.edit[anchor.index])) {
             const button = createMagicButton();
             subq.input.parentNode.appendChild(button);
 
