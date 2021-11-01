@@ -36,6 +36,7 @@
         "webpack-target-webextension": "^0.4.0"
     },
     "dependencies": {
-        "dotenv": "^10.0.0"
+        "dotenv": "^10.0.0",
+        "string-similarity": "^4.0.4"
     }
 }
