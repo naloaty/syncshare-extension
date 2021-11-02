@@ -123,4 +123,4 @@ const attachContextMenu = (() => {
 
 })();
 
-export { attachContextMenu }
+export default attachContextMenu;
