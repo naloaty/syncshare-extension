@@ -1,8 +1,16 @@
 import attachContextMenu from "Widgets/ContextMenu"
+import browser from "webextension-polyfill";
 
 class Question {
 
     constructor({container}) {
+
+        const postData = container.querySelector("input.questionflagpostdata").value;
+        const url = new URL("a://a/a?" + postData);
+
+        this.qId = parseInt(url.searchParams.get("qid"));
+
+        /** @type {HTMLDivElement} */
         this.container = container;
     }
 
@@ -59,20 +67,26 @@ class Question {
         function getColor(correctness) {
 
             // Default correctness - unknown
-            const color = {
-                backColor: "BDBDBD", // Pastel gray  
-                textColor: "F7F7F7"  // Almost white
-            }
+            const color = {}
 
             switch(correctness) {
-                // Incorrect - pastel red
-                case 0: color.backColor = "FE7F6C"; break;
+                // Incorrect
+                case 0: 
+                    color.backColor = "#b81414"; // Red
+                    color.textColor = "#FFFFFF"; // White
+                    break;
 
-                // Partially correct - pastel yellow
-                case 1: color.backColor = "E0CD6E"; break;
+                // Partially correct
+                case 1: 
+                    color.backColor = "#e66815"; // Orange
+                    color.textColor = "#FFFFFF"; // White
+                    break;
 
-                // Correct - pastel green
-                case 2: color.backColor = "60C080"; break; 
+                // Correct
+                case 2: 
+                    color.backColor = "#369c14"; // Green
+                    color.textColor = "#FFFFFF"; // White
+                    break; 
             }
 
             return color;
@@ -89,8 +103,8 @@ class Question {
 
             if (suggestions?.length > 0) {
                 const suggMenu = {
-                    label: "Suggestions",
-                    icon: { name: "fa-star" },
+                    label: browser.i18n.getMessage("magicMenuSuggestions"),
+                    icon: { name: "fa-star-o" },
                     action: null,
                     subMenu: []
                 }
@@ -114,15 +128,14 @@ class Question {
 
             if (submissions?.length > 0) {
                 const subsMenu = {
-                    label: "Submissions",
-                    icon: { name: "fa-user" },
+                    label: browser.i18n.getMessage("magicMenuSubmissions"),
+                    icon: { name: "fa-bar-chart" },
                     action: null,
                     subMenu: []
                 }
 
                 submissions.forEach(submission => {
                     const item = submission.item;
-                    const anchor = this.createWidgetAnchor(item);
 
                     subsMenu.subMenu.push({
                         label: item.label,

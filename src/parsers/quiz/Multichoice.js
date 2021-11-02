@@ -1,7 +1,7 @@
 import Question from "Parsers/quiz/Question"
 import * as Strings from "Utils/strings"
 import * as Images from "Utils/images"
-import createMagicButton from "Widgets/MagicButton"
+import MagicButton from "Widgets/MagicButton"
 
 class Multichoice extends Question {
 
@@ -19,7 +19,7 @@ class Multichoice extends Question {
             const label = input.nextSibling;
 
             const sign = [
-                Strings.removeInvisible(label.lastChild.textContent),
+                Strings.removeInvisible(label.lastChild.textContent) || "[NO TEXT]",
                 Images.serializeArray(label.querySelectorAll("img"))
             ];
 
@@ -29,7 +29,7 @@ class Multichoice extends Question {
 
     createWidgetAnchor(anchor) {
         if (this.type === "radio") {
-            const button = createMagicButton();
+            const button = MagicButton.create();
             this.answer.appendChild(button);
 
             const onClick = (data) => {
@@ -67,7 +67,7 @@ class Multichoice extends Question {
                 choice = this.options[candidate];
             }
 
-            const button = createMagicButton();
+            const button = MagicButton.create();
             choice.parentNode.insertBefore(button, choice.nextSibling);
             const onClick = data => choice.checked = data.checked;
 

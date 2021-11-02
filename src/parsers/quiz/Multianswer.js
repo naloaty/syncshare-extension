@@ -1,7 +1,7 @@
 import Question from "Parsers/quiz/Question"
 import * as Images from "Utils/images"
 import * as Strings from "Utils/strings";
-import createMagicButton from "Widgets/MagicButton"
+import MagicButton from "Widgets/MagicButton"
 
 class Multianswer extends Question {
 
@@ -37,7 +37,7 @@ class Multianswer extends Question {
                 const label = input.nextSibling;
 
                 const sign = [
-                    Strings.removeInvisible(label.lastChild.textContent),
+                    Strings.removeInvisible(label.lastChild.textContent) || "[NO TEXT]",
                     Images.serializeArray(label.querySelectorAll("img"))
                 ];                  
     
@@ -58,7 +58,7 @@ class Multianswer extends Question {
                 if (!option.value)
                     continue;
 
-                subQ.optionMap[option.innerText] = Strings.removeInvisible(option.value);
+                subQ.optionMap[option.innerText] = option.value;
             }
 
             this.select[getSlot(select)] = subQ;
@@ -69,7 +69,7 @@ class Multianswer extends Question {
         let subq = null;
 
         if ((subq = this.select[anchor.index])) {
-            const button = createMagicButton();
+            const button = MagicButton.create();
             subq.node.parentNode.appendChild(button);
 
             const onClick = (data) => {
@@ -95,7 +95,7 @@ class Multianswer extends Question {
         else if ((subq = this.multichoice[anchor.index])) {
 
             if ("radio" === subq.type) {
-                const button = createMagicButton();
+                const button = MagicButton.create();
                 subq.answer.appendChild(button);
 
                 const onClick = (data) => {
@@ -125,7 +125,7 @@ class Multianswer extends Question {
                 // Try to find similar nodes in case 
                 // the text of the question has changed
                 if (!choice) {
-                    const candiate = Strings.findSimilar(anchor.signature, Object.keys(subq.options));
+                    const candiate = Strings.findSimilar(anchor.sign, Object.keys(subq.options));
 
                     if (!candiate) {
                         return;
@@ -134,7 +134,7 @@ class Multianswer extends Question {
                     choice = subq.options[candiate];
                 }
     
-                const button = createMagicButton();
+                const button = MagicButton.create();
                 choice.parentNode.insertBefore(button, choice.nextSibling);
                 const onClick = data => choice.checked = data.checked;
     
@@ -143,7 +143,7 @@ class Multianswer extends Question {
 
         }
         else if ((subq = this.edit[anchor.index])) {
-            const button = createMagicButton();
+            const button = MagicButton.create();
             subq.input.parentNode.appendChild(button);
 
             const onClick = (value) => {

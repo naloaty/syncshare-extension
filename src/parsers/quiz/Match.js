@@ -1,7 +1,7 @@
 import Question from "Parsers/quiz/Question"
 import * as Images from "Utils/images"
 import * as Strings from "Utils/strings"
-import createMagicButton from "Widgets/MagicButton"
+import MagicButton from "Widgets/MagicButton"
 
 class Match extends Question {
 
@@ -24,7 +24,7 @@ class Match extends Question {
             const select = selects[i];
 
             let sign = [
-                Strings.removeInvisible(stem.innerText),
+                Strings.removeInvisible(stem.innerText) || "[NO TEXT]",
                 Images.serializeArray(stem.querySelectorAll("img"))
             ];
 
@@ -47,7 +47,7 @@ class Match extends Question {
             select = this.labels[candidate];
         }
 
-        const button = createMagicButton();
+        const button = MagicButton.create();
         select.parentNode.appendChild(button);
 
         const onClick = data => {
