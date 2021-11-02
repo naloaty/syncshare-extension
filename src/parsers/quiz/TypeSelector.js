@@ -14,23 +14,23 @@ class TypeSelector {
     select(container) {
         switch (container.classList[1]) {
             case "match": 
-                return new Match(container);
+                return new Match({container});
 
             case "multianswer": 
-                return new Multianswer(container);
+                return new Multianswer({container});
 
             case "multichoice": 
             case "truefalse": 
                 /* TODO: create seperate handler for truefalse question */
-                return new Multichoice(container);
+                return new Multichoice({container});
 
             case "shortanswer": 
             case "numerical": 
             case "calculated": 
-                return new Shortanswer(container);
+                return new Shortanswer({container});
 
             default:
-                logger.warn("Unknown question type", container.classList[1]);
+                logger.warn("Unknown question type:", container.classList[1]);
         }
     }
 }
