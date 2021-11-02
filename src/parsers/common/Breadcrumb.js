@@ -34,4 +34,4 @@ class Breadcrumb {
     }
 }
 
-export default new Breadcrumb();
+export default Breadcrumb;
