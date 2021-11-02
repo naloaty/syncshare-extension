@@ -1,24 +1,32 @@
-const path = require("path");
+/* eslint-env node */
+
+const path         = require("path");
 const commonConfig = require("./webpack.base.js");
-const webpack = require("webpack");
-const { merge } = require("webpack-merge");
-const CopyPlugin = require("copy-webpack-plugin");
+const webpack      = require("webpack");
+const { merge }    = require("webpack-merge");
+const CopyPlugin   = require("copy-webpack-plugin");
 
 const rootDir = path.resolve(__dirname, "../../");
 
-const productionConfig = {
-    mode: "production",
+const config = {
+    mode:    "production",
     devtool: "nosources-source-map",
     plugins: [
-        new webpack.EnvironmentPlugin({
-            NODE_ENV: "production",
-            DEBUG: false
-        }),
-        new CopyPlugin({
-            patterns: [
-                { from: path.resolve(rootDir, "LICENSE.md") },
-            ]
-        })
+        new webpack.EnvironmentPlugin(
+            {
+                NODE_ENV: "production",
+                DEBUG: false
+            }
+        ),
+        new CopyPlugin(
+            {
+                patterns: [
+                    { 
+                        from: path.resolve(rootDir, "LICENSE.md") 
+                    },
+                ]
+            }
+        )
     ],
     optimization: {
         minimize: false,
@@ -32,5 +40,5 @@ module.exports = (() => {
     console.log("ANALYTICS_URL: ", process.env.ANALYTICS_URL);
     console.log("ANALYTICS_ID: ", process.env.ANALYTICS_ID);
 
-    return merge(commonConfig, productionConfig);
+    return merge(commonConfig, config);
 })();

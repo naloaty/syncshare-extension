@@ -1,0 +1,13 @@
+{
+    "extensionDescription": {
+        "message": "Позволяет узнать правильные ответы на тесты в обучающей системе Moodle, а также поделиться ими с другими пользователями расширения."
+    },
+
+    "magicMenuSuggestions": {
+        "message": "Рекомендации"
+    },
+
+    "magicMenuSubmissions": {
+        "message": "Пользователи"
+    }
+}

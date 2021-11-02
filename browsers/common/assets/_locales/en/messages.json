@@ -1,0 +1,13 @@
+{
+    "extensionDescription": {
+        "message": "Synchronize and share right answers to Moodle quizzes."
+    },
+
+    "magicMenuSuggestions": {
+        "message": "Suggestions"
+    },
+
+    "magicMenuSubmissions": {
+        "message": "Submissions"
+    }
+}

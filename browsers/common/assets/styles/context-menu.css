@@ -6,6 +6,7 @@
 .context-sub-menu, 
 .context-menu {
   position: fixed;
+  color: #000;
   background: #fff;
   z-index: 9999999;
   width: 150px;
@@ -17,10 +18,10 @@
   font-family: sans-serif;
 } 
 .context-menu .context-menu-item {
-  height: 20px;
+  height: 30px;
   display: flex;
   align-items: center;
-  padding: 6px 10px;
+  padding: 6px 8px;
   cursor: pointer;
   position: relative;
   border-bottom: 1px solid #f2f2f2;
@@ -35,15 +36,18 @@
 .context-menu .context-menu-item .post-icon,
 .context-sub-menu .context-menu-item .post-icon {
    margin-left: auto;
-   padding: 3px 3px;
+   padding: 4px 4px;
    border-radius: 2px;
+   line-height: 1;
+   margin-right: 0;
 } 
 
 .context-menu .context-menu-item .pre-icon,
 .context-sub-menu .context-menu-item .pre-icon {
    margin-right: 6px;
-   padding: 3px 3px;
+   padding: 4px 4px;
    border-radius: 2px;
+   line-height: 1;
 } 
 
 .context-menu-item:last-of-type {

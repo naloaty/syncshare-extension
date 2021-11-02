@@ -1,24 +1,23 @@
-const CopyPlugin = require("copy-webpack-plugin");
-const commonProdConfig = require("../../webpack/webpack.prod.js");
-const { merge } = require("webpack-merge");
-const path = require("path");
+/* eslint-env node */
 
-const firefoxRoot = path.resolve(__dirname, "../");
+const CopyPlugin       = require("copy-webpack-plugin");
+const commonProdConfig = require("../webpack/webpack.prod.js");
+const { merge }        = require("webpack-merge");
+const path             = require("path");
 
-const firefoxProdConfig = {
-    output: {
-        path: path.resolve(firefoxRoot, "distr")
+const outputFolder = path.resolve(__dirname, "distr")
+const commonRoot   = path.resolve(__dirname, "..", "common");
+
+const config = {
+    output: { 
+        path: outputFolder 
     },
     plugins: [
         new CopyPlugin({
             patterns: [
                 {
-                    from: path.resolve(
-                        firefoxRoot,
-                        "manifests",
-                        "manifest.template.json"
-                    ),
-                    to: "manifest.json",
+                    from: path.resolve(commonRoot, "manifest", "manifest.template.json"),
+                    to:   path.resolve(outputFolder, "manifest.json"),
                     transform(content) {
                         const manifest = JSON.parse(content.toString());
                         
@@ -39,18 +38,15 @@ const firefoxProdConfig = {
                             }
                         }
 
-                        return JSON.stringify(manifest, null, 4);
+                        return JSON.stringify(manifest, null, 2);
                     }
                 },
                 {
-                    from: path.resolve(firefoxRoot, "src")
-                },
-                {
-                    from: path.resolve(firefoxRoot, "..", "src")
+                    from: path.resolve(commonRoot, "assets")
                 }
             ]
         })
     ]
 };
 
-module.exports = merge(commonProdConfig, firefoxProdConfig);
+module.exports = merge(commonProdConfig, config);
