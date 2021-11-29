@@ -3,7 +3,7 @@ import "@/core/umami.js";
 import Mediator from "@/core/transport.js";
 import { Events } from "@/core/analytics.js"
 
-const sessionStorage = window.sessionStorage;
+const sessionStorage = window.localStorage;
 
 Mediator.subscribe("sessionGetItem", (data, sender) => {
     const { id, key } = data;
