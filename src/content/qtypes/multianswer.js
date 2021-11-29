@@ -153,7 +153,7 @@ class MultiAnswerQ extends Question {
             if (subq.type === this.types.combo) {
                 const value = subq.select.value;
 
-                if (parseInt(value) === NaN)
+                if (!parseInt(value))
                     continue;
 
                 const que = {
