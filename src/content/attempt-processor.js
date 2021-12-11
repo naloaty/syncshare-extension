@@ -23,17 +23,17 @@ const Page = (() => {
         for (let link of links) {
             const url = new URL(link.href);
 
-            switch (url.pathname) {
-                case "/course/view.php":
-                    if (result.courseName) continue;
+            if (url.pathname.includes("/course/view.php")) {
+                if (result.courseName) continue;
 
-                    result.courseId = parseInt(url.searchParams.get("id"));
-                    result.courseName = link.title;
-                    break;
+                result.courseId = parseInt(url.searchParams.get("id"));
+                result.courseName = link.title;
+            }
+            else if (url.pathname.includes("/mod/quiz/view.php")) {
+                if (result.quizName) continue;
 
-                case "/mod/quiz/view.php":
-                    result.quizName = link.innerText;
-                    break;
+                result.quizName = link.innerText;
+                result.quizId = parseInt(url.searchParams.get("id"));
             }
         }
 
@@ -48,13 +48,19 @@ const Page = (() => {
 
     return {
         getMeta: () => {
-            const result = {};
+            const url = parseUrl();
+            const breadcrumb = parseBreadcrumb();
+            const state = parseState();
 
-            Object.assign(result, parseUrl());
-            Object.assign(result, parseBreadcrumb());
-            Object.assign(result, parseState());
-
-            return result;
+            return {
+                state:      state.state,
+                host:       url.host,
+                attemptId:  url.attemptId,
+                quizId:     url.quizId ? url.quizId : breadcrumb.quizId,
+                quizName:   breadcrumb.quizName,
+                courseId:   breadcrumb.courseId,
+                courseName: breadcrumb.courseName,
+            };
         }
     }
 })();

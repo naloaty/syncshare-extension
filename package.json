@@ -1,6 +1,6 @@
 {
     "name": "syncshare-extension",
-    "version": "0.1.9",
+    "version": "0.1.10",
     "description": "Moodle assist",
     "main": "index.js",
     "scripts": {
