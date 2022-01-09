@@ -4,8 +4,8 @@
     "description": "Moodle assist",
     "main": "index.js",
     "scripts": {
-        "watch:chrome": "cross-env NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/chrome/webpack/webpack.dev.js --watch",
-        "watch:firefox": "cross-env NODE_ENV='development' ENV_FILE='.env.development' npx webpack --config browsers/firefox/webpack/webpack.dev.js --watch",
+        "buildDev:chrome": "cross-env ENV_FILE='.env.dev' npx webpack --config browsers/chrome/webpack/webpack.dev.js",
+        "buildDev:firefox": "cross-env ENV_FILE='.env.dev' npx webpack --config browsers/firefox/webpack/webpack.dev.js",
         "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
         "build:firefox": "npx webpack --config browsers/firefox/webpack/webpack.prod.js"
     },
@@ -35,6 +35,9 @@
         "webpack-target-webextension": "^0.4.0"
     },
     "dependencies": {
-        "dotenv": "^10.0.0"
+        "axios": "^0.24.0",
+        "dotenv": "^10.0.0",
+        "form-data": "^4.0.0",
+        "uuid": "^8.3.2"
     }
 }

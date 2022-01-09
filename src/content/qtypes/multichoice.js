@@ -1,7 +1,7 @@
 import {
     washString, packImages, getState,
     States, findAppropriate, createMagicButton,
-    findMagicButton, getUUID, desc_len
+    findMagicButton, getUUID, desc_len, uploadFormulationImages
 } from "@/core/tools.js";
 import Question from "@/content/qtypes/question.js";
 
@@ -41,13 +41,17 @@ class MultiChoiceQ extends Question {
         for (let input of inputs) {
             const choice = {};
 
+            const imgs = label.querySelectorAll("img");
+
             const label = input.nextSibling;
             const text = washString(label.lastChild.textContent);
-            const images = packImages(label.querySelectorAll("img"));
+            const images = packImages(imgs);
+            const imageFiles = uploadFormulationImages(imgs);
 
             choice.input = input;
             choice.text = text;
             choice.images = images;
+            choice.imageFiles = imageFiles;
 
             const uuid = getUUID({
                 attachTo: { type: structure.type, text, images },
@@ -71,14 +75,17 @@ class MultiChoiceQ extends Question {
         const result = {}
 
         const text = this.base.querySelector("div.qtext");
+        const imgs = text.querySelectorAll("img");
 
-        result.images = packImages(text.querySelectorAll("img"));
+        result.images = packImages();
+        result.imageFiles = uploadFormulationImages(imgs);
         result.plain = text.innerText;
         result.choices = [];
 
         for (let choice of this.struct.choices) {
             result.choices.push({
                 images: choice.images,
+                imageFiles: choice.imageFiles,
                 text: choice.text
             });
         }

@@ -1,6 +1,7 @@
 import Mediator from "@/core/transport.js";
 import QuestionHandler from "@/content/question-handler.js";
 import "@/core/umami.js";
+import { log } from "@/core/log.js";
 
 const Page = (() => {
 
@@ -65,13 +66,14 @@ const Page = (() => {
     }
 })();
 
-console.log("Content script loaded");
-
-for (let b of document.querySelectorAll("div.que")) {
-    QuestionHandler.handle(b);
-}
+log("Content script loaded");
 
 const meta = Page.getMeta();
+
+for (let b of document.querySelectorAll("div.que")) {
+    QuestionHandler.handle(b, meta.state);
+}
+
 
 if (meta.state === "review") {
     Mediator.publish("review-data", { 

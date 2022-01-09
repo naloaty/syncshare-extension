@@ -1,7 +1,8 @@
 import {
     washString, packImages, getState,
     States, findAppropriate, createMagicButton,
-    findMagicButton, getUUID, verifyRightAnswer
+    findMagicButton, getUUID, verifyRightAnswer,
+    uploadFormulationImages
 } from "@/core/tools.js";
 import Question from "@/content/qtypes/question.js";
 
@@ -50,9 +51,12 @@ class MultiAnswerQ extends Question {
             for (let input of inputs) {
                 const choice = {};
 
+                const imgs = label.querySelectorAll("img");
+
                 const label = input.labels[0];
                 const text = washString(label.innerText);
-                const images = packImages(label.querySelectorAll("img"));
+                const images = packImages(imgs);
+                const imageFiles = uploadFormulationImages(imgs);
 
                 const uuid = getUUID({
                     attachTo: { slot, type: subq.type, text, images },
@@ -62,6 +66,7 @@ class MultiAnswerQ extends Question {
                 choice.input = input;
                 choice.text = text;
                 choice.images = images;
+                choice.imageFiles = imageFiles;
 
                 subq.choices.push(choice);
                 attachMap[uuid] = choice;
@@ -111,8 +116,10 @@ class MultiAnswerQ extends Question {
         const result = {}
 
         const text = this.base.querySelector("div.formulation");
+        const imgs = text.querySelectorAll("img");
 
-        result.images = packImages(text.querySelectorAll("img"));
+        result.images = packImages(imgs);
+        result.imageFiles = uploadFormulationImages(imgs);
         result.plain = text.innerText;
         result.subquestions = [];
 
@@ -129,8 +136,8 @@ class MultiAnswerQ extends Question {
                     que.choices = [];
 
                     Object.values(subq.choices).forEach(choice => {
-                        const { text, images } = choice;
-                        que.choices.push({ text, images });
+                        const { text, images, imageFiles } = choice;
+                        que.choices.push({ text, images, imageFiles });
                     });
 
                     break;

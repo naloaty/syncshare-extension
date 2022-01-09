@@ -7,14 +7,11 @@ const developmentConfig = {
     devtool: "inline-source-map",
     plugins: [
         new webpack.EnvironmentPlugin({
-            NODE_ENV: "development",
             DEBUG: true
         }),
         new webpack.DefinePlugin({
-            SERVICE_URL: JSON.stringify(process.env.SERVICE_URL ?? "http://localhost:5000"),
-            ANALYTICS_URL: JSON.stringify(process.env.ANALYTICS_URL ?? "http://undefined:0000"),
-            ANALYTICS_ID: JSON.stringify(process.env.ANALYTICS_ID ?? "un-de-fi-ne-d")
-        })
+            DISABLE_ANALYTICS: true
+        }),
     ],
     optimization: {
         minimize: false

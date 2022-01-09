@@ -4,11 +4,12 @@ import MatchQ from "@/content/qtypes/match.js";
 import ShortAnswerQ from "@/content/qtypes/shortanswer.js";
 import MultiChoiceQ from "@/content/qtypes/multichoice.js";
 import MultiAnswerQ from "@/content/qtypes/multianswer.js";
+import EssayQ from "@/content/qtypes/essay.js";
 
 const QuestionHandler = (() => {
     const questions = [];
 
-    const handleQuestion = (queDiv) => {
+    const handleQuestion = (queDiv, state) => {
         const meta = {
             type: null,
             behavior: null,
@@ -45,24 +46,29 @@ const QuestionHandler = (() => {
 
         try {
             switch (meta.type) {
-                case "match": 
-                    questions.push(new MatchQ(meta, queDiv));
-                    break;
+                //case "match": 
+                //    questions.push(new MatchQ(meta, queDiv));
+                //    break;
 
-                case "multianswer": 
-                    questions.push(new MultiAnswerQ(meta, queDiv));
-                    break;
+                //case "multianswer": 
+                //    questions.push(new MultiAnswerQ(meta, queDiv));
+                //    break;
 
-                case "multichoice": 
-                case "truefalse": 
+                //case "multichoice": 
+                //case "truefalse": 
                     /* This is not a good thing to use this type for truefalse */
-                    questions.push(new MultiChoiceQ(meta, queDiv));
-                    break;
+                //    questions.push(new MultiChoiceQ(meta, queDiv));
+                //    break;
 
-                case "shortanswer": 
-                case "numerical": 
-                case "calculated": 
-                    questions.push(new ShortAnswerQ(meta, queDiv));
+                //case "shortanswer": 
+                //case "numerical": 
+                //case "calculated": 
+                //    questions.push(new ShortAnswerQ(meta, queDiv));
+                //    break;
+
+                case "essay":
+                    if (state !== "attempt") { return; }
+                    questions.push(new EssayQ(meta, queDiv));
                     break;
 
                 default:
@@ -103,7 +109,7 @@ const QuestionHandler = (() => {
     }
 
     return {
-        handle: (queDiv) => handleQuestion(queDiv),
+        handle: (queDiv, state) => handleQuestion(queDiv, state),
         collectData: () => collectData(),
         requestAnswers: (host) => requestAnswers(host)
     }

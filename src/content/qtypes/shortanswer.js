@@ -1,4 +1,6 @@
-import { washString, packImages, getState, States, createMagicButton, findMagicButton } from "@/core/tools.js";
+import { washString, packImages, getState, 
+    States, createMagicButton, findMagicButton, 
+    uploadFormulationImages } from "@/core/tools.js";
 import Question from "@/content/qtypes/question.js";
 
 class ShortAnswerQ extends Question {
@@ -11,9 +13,12 @@ class ShortAnswerQ extends Question {
         const text = this.base.querySelector("div.qtext");
         const images = text.querySelectorAll("img");
 
+        const imageFiles = uploadFormulationImages(images);
+
         return {
             plain: text.innerText,
             images: packImages(images),
+            imageFiles: imageFiles
         };
     }
 

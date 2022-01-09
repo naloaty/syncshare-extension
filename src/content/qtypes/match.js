@@ -1,7 +1,7 @@
 import {
     washString, packImages, getState, decodeFano,
     States, findAppropriate, createMagicButton,
-    findMagicButton, desc_len
+    findMagicButton, desc_len, uploadFormulationImages
 } from "@/core/tools.js";
 import Question from "@/content/qtypes/question.js";
 
@@ -33,9 +33,12 @@ class MatchQ extends Question {
         for (let i = 0; i < stems.length; i++) {
             const branch = {}
 
+            const imgs = stems[i].querySelectorAll("img");
+
             branch.select = selects[i];
             branch.text = washString(stems[i].innerText);
-            branch.images = packImages(stems[i].querySelectorAll("img"));
+            branch.images = packImages(imgs);
+            branch.imageFiles = uploadFormulationImages(imgs);
 
             structure.branches.push(branch);
         }
@@ -47,8 +50,10 @@ class MatchQ extends Question {
         const result = {}
 
         const text = this.base.querySelector("div.qtext");
+        const imgs = text.querySelectorAll("img");
 
-        result.images = packImages(text.querySelectorAll("img"));
+        result.images = packImages(imgs);
+        result.imageFiles = uploadFormulationImages(imgs);
         result.plain = text.innerText;
         result.options = [];
         result.choices = [];
@@ -60,6 +65,7 @@ class MatchQ extends Question {
         for (let branch of this.struct.branches) {
             result.choices.push({
                 images: branch.images,
+                imageFiles: branch.imageFiles,
                 text: branch.text
             });
         }
