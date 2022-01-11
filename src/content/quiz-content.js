@@ -28,7 +28,7 @@ if (meta.state === "review") {
     
     Mediator.subscribe("checkForModal", data => {
         if (data.show) {
-            MSG.showDonationMessage(settings => settings.reviewDelay);
+            MSG.showDonationMessage(settings => settings.reviewDelay, "review");
         }
     });
 }

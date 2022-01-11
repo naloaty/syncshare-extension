@@ -14,6 +14,9 @@ const productionConfig = {
             NODE_ENV: "production",
             DEBUG: false
         }),
+        new webpack.DefinePlugin({
+            DISABLE_ANALYTICS: false
+        }),
         new CopyPlugin({
             patterns: [
                 { from: path.resolve(rootDir, "LICENSE.md") },

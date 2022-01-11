@@ -289,7 +289,7 @@ Mediator.subscribe("menu-opened", data => {
     attempts[data.attemptId].menuOpened += 1;
 });
 
-Mediator.publish("menu-attached", data => {
+Mediator.subscribe("menu-attached", data => {
     register(data.attemptId);
     attempts[data.attemptId].menuAttached += 1;
 });

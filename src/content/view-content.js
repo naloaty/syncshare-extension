@@ -13,7 +13,7 @@ Mediator.publish("checkForModal", {
 
 Mediator.subscribe("checkForModal", data => {
     if (data.show) {
-        MSG.showDonationMessage(settings => settings.viewDelay);
+        MSG.showDonationMessage(settings => settings.viewDelay, "view");
     }
 });
 
@@ -21,7 +21,7 @@ Mediator.publish("is-outdated", {});
 
 Mediator.subscribe("is-outdated-response", data => {
     if (data.outdated) {
-        MSG.showOutdatedMessage(settings => settings.viewDelay);
+        MSG.showOutdatedMessage(settings => settings.viewDelay, "view");
     }
 });
 
@@ -29,6 +29,6 @@ Mediator.publish("check-status", {});
 
 Mediator.subscribe("check-status-response", data => {
     if (data.offline) {
-        MSG.showStatusMessage(settings => settings.viewDelay);
+        MSG.showStatusMessage(settings => settings.viewDelay, "view");
     }
 });
