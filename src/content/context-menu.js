@@ -2,8 +2,9 @@
  * Author: Before Semicolon
  * Codepen: https://codepen.io/beforesemicolon
  */
-
+import Mediator from "@/core/transport.js";
 import { Events } from  "@/core/analytics.js"
+import PageMeta from "@/content/page-parser";
 
 const attachContextMenu = (() => {
     const contextMenu = document.createElement("ul");
@@ -34,6 +35,11 @@ const attachContextMenu = (() => {
             e.stopPropagation();
             if (!opt.subMenu || opt.subMenu.length === 0) {
                 window.umami.trackEvent("Magic value fill", Events.click);
+
+                Mediator.publish("magic-used", { 
+                    attemptId: PageMeta.attemptId
+                });
+
                 opt.callback(opt);
                 hideMenu(true);
             }
@@ -91,7 +97,16 @@ const attachContextMenu = (() => {
         el.setAttribute("ctx-menu", "true");
         el.addEventListener("click", (e) => {
             window.umami.trackEvent("Magic menu open", Events.click);
+
+            Mediator.publish("menu-opened", { 
+                attemptId: PageMeta.attemptId
+            });
+
             showMenu(e, options);
+        });
+
+        Mediator.publish("menu-attached", { 
+            attemptId: PageMeta.attemptId
         });
     };
 })();

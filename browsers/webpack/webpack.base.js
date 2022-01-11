@@ -1,7 +1,7 @@
 const path = require("path");
 const webpack = require("webpack");
 const dotenv = require("dotenv");
-const WebExtensionTarget = require("webpack-target-webextension");
+const WebExtension = require("webpack-target-webextension");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 const rootDir = path.resolve(__dirname, "../../");
@@ -25,9 +25,10 @@ const commonConfig = {
         publicPath: "/"
     },
     entry: {
-        quizContentScript: path.resolve(rootDir, "src", "content", "attempt-processor.js"),
-        quizBackgroundHandler: path.resolve(rootDir, "src", "background", "quiz-handler.js"),
-        background: path.resolve(rootDir, "src", "background", "background.js")
+        "summary-content": path.resolve(rootDir, "src", "content", "summary-content.js"),
+        "view-content":    path.resolve(rootDir, "src", "content", "view-content.js"),
+        "quiz-content":    path.resolve(rootDir, "src", "content", "quiz-content.js"),
+        "background":      path.resolve(rootDir, "src", "background", "background.js")
     },
     resolve: {
         // Need to set these fields manually as their default values rely on `web` target.
@@ -51,7 +52,11 @@ const commonConfig = {
             ANALYTICS_ID: JSON.stringify(process.env.ANALYTICS_ID),
             VERSION: JSON.stringify(process.env.npm_package_version)
         }),
-        new WebExtensionTarget(),
+        new WebExtension({
+            background: {
+                entry: "background"
+            }
+        }),
         new CleanWebpackPlugin()
     ]
 }

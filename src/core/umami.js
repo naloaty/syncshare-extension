@@ -3,6 +3,21 @@ import { sessionStorage } from "@/core/session-storage.js";
 (function () {
   'use strict';
 
+  if (DISABLE_ANALYTICS) {
+    if (!window.umami) {
+        let umami = {};
+
+        umami.trackView = () => {};
+        umami.trackEvent = () => {};
+        umami.addEvents = () => {};
+        umami.removeEvents = () => {};
+  
+        window.umami = umami;
+    }
+
+    return;
+  }
+
   function removeTrailingSlash(url) {
     return url && url.length > 1 && url.endsWith('/') ? url.slice(0, -1) : url;
   }

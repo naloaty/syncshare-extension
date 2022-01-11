@@ -17,22 +17,44 @@
             ],
             "include_globs": [
                 "*mod/quiz/attempt.php*",
-                "*mod/quiz/review.php*"
+                "*mod/quiz/review.php*",
+                "*mod/quiz/view.php*"
             ],
             "js": [
-                "quizContentScript.js"
+                "quiz-content.js"
             ],
             "css": [
                 "styles/magic-button.css",
                 "styles/context-menu.css"
             ],
             "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "include_globs": [
+                "*mod/quiz/view.php*"
+            ],
+            "js": [
+                "view-content.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "include_globs": [
+                "*mod/quiz/summary.php*"
+            ],
+            "js": [
+                "summary-content.js"
+            ],
+            "run_at": "document_end"
         }
     ],
     "background": {
         "page": "background.html"
-    },
-    "web_accessible_resources": [
-        "/*.js"
-    ]
+    }
 }

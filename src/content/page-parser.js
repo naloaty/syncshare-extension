@@ -1,8 +1,6 @@
-import Mediator from "@/core/transport.js";
-import QuestionHandler from "@/content/question-handler.js";
-import "@/core/umami.js";
+import { log } from "@/core/log";
 
-const Page = (() => {
+const PageParser = (() => {
 
     /* attemptId, quizId */
     const parseUrl = () => {
@@ -40,20 +38,12 @@ const Page = (() => {
         return result;
     }
 
-    /* state */
-    const parseState = () => {
-        const state = document.querySelector("#page-mod-quiz-review");
-        return { state: state ? "review" : "attempt" }
-    }
-
     return {
         getMeta: () => {
             const url = parseUrl();
             const breadcrumb = parseBreadcrumb();
-            const state = parseState();
 
             return {
-                state:      state.state,
                 host:       url.host,
                 attemptId:  url.attemptId,
                 quizId:     url.quizId ? url.quizId : breadcrumb.quizId,
@@ -65,31 +55,6 @@ const Page = (() => {
     }
 })();
 
-console.log("Content script loaded");
+log("Page meta parsed");
 
-for (let b of document.querySelectorAll("div.que")) {
-    QuestionHandler.handle(b);
-}
-
-const meta = Page.getMeta();
-
-if (meta.state === "review") {
-    Mediator.publish("review-data", { 
-        meta,
-        qdata: QuestionHandler.collectData(),
-        v: "1.0"
-    });
-}
-else 
-{
-    QuestionHandler.requestAnswers(meta);
-        
-    window.addEventListener("beforeunload", (e) => {
-        Mediator.publish("attempt-data", { 
-            meta,
-            qdata: QuestionHandler.collectData(),
-            v: "1.0"
-        });
-    });
-}
-
+export default PageParser.getMeta();
