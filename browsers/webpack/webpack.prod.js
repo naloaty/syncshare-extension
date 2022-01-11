@@ -24,7 +24,7 @@ const productionConfig = {
         })
     ],
     optimization: {
-        minimize: false,
+        minimize: true,
         usedExports: true
     }
 };
