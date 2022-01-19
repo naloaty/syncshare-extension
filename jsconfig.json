@@ -6,8 +6,7 @@
       "paths": {
         "Internal/*": ["src/internal/*"],
         "Utils/*":    ["src/utils/*"],
-        "Parsers/*":  ["src/parsers/*"],
-        "Pages/*":    ["src/pages/*"],
+        "Content/*":  ["src/content/*"],
         "Widgets/*":  ["src/widgets/*"],
         "Service/*":  ["src/service/*"]
       }

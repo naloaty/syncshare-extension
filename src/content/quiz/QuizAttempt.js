@@ -1,6 +1,6 @@
-import Question from "Parsers/quiz/Question";
-import TypeSelector from "Parsers/quiz/TypeSelector";
-import Breadcrumb from "src/content/common/Breadcrumb";
+import Question from "Content/quiz/questions/Question";
+import TypeSelector from "Content/quiz/questions/TypeSelector";
+import Breadcrumb from "Content/common/Breadcrumb";
 import Log from "Internal/log";
 import browser from "webextension-polyfill";
 

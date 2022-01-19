@@ -1,4 +1,4 @@
-import Question from "Parsers/quiz/Question";
+import Question from "Content/quiz/questions/Question"
 import MagicButton from "Widgets/MagicButton";
 
 class Shortanswer extends Question {

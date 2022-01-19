@@ -1,4 +1,4 @@
-import Question from "Parsers/quiz/Question"
+import Question from "Content/quiz/questions/Question"
 import * as Strings from "Utils/strings"
 import * as Images from "Utils/images"
 import MagicButton from "Widgets/MagicButton"
