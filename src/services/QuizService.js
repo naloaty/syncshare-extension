@@ -41,4 +41,4 @@ class QuizService {
     }
 }
 
-export default QuizService;
+new QuizService().init();

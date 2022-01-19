@@ -165,7 +165,7 @@ class Question {
      * Creates magic button and defines function to autofill answer
      * 
      * @param   {string} anchor Question-specific signature to anchor magic button to specific element
-     * @returns {WidgetAnchor}  Anchor containg created magic button and autofill function
+     * @returns {WidgetAnchor}  Anchor containing created magic button and autofill function
      */
     createWidgetAnchor(anchor) {
         throw `${this.name}: createWidgetAnchor must be overridden!`;
