@@ -1,11 +1,11 @@
 {
     "name": "syncshare-extension",
-    "version": "0.1.6",
+    "version": "1.0.0",
     "description": "Synchronize and share right answers to Moodle quizzes.",
     "main": "index.js",
     "scripts": {
-        "watch:chrome": "cross-env NODE_ENV='development' ENV_FILE='.env.dev' npx webpack --config browsers/chrome/webpack.dev.js --watch",
-        "watch:firefox": "cross-env NODE_ENV='development' ENV_FILE='.env.dev' npx webpack --config browsers/firefox/webpack.dev.js --watch",
+        "dev:build:chrome": "cross-env NODE_ENV='development' ENV_FILE='.env.dev' npx webpack --config browsers/chrome/webpack.dev.js",
+        "dev:build:firefox": "cross-env NODE_ENV='development' ENV_FILE='.env.dev' npx webpack --config browsers/firefox/webpack.dev.js",
         "build:chrome": "npx webpack --config browsers/chrome/webpack.prod.js",
         "build:firefox": "npx webpack --config browsers/firefox/webpack.prod.js"
     },
@@ -37,6 +37,7 @@
     },
     "dependencies": {
         "dotenv": "^10.0.0",
+        "events": "^3.3.0",
         "string-similarity": "^4.0.4"
     }
 }
