@@ -1,9 +1,14 @@
-class MagicButton {
-    create() {
-        const btn = document.createElement("span");
-        btn.className = "ss-btn icon fa fa-magic fa-fw";
-        return btn;
+import Button from "Widgets/Button";
+
+class MagicButton extends Button {
+
+    createElement() {
+        const element = document.createElement("span");
+        element.classList.add("ss-btn", "icon", "fa", "fa-magic", "fa-fw");
+
+        return element;
     }
+
 }
 
-export default new MagicButton();
+export default MagicButton;

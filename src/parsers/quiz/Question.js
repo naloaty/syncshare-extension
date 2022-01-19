@@ -1,4 +1,4 @@
-import attachContextMenu from "Widgets/ContextMenu"
+import ContextMenu from "Widgets/ContextMenu"
 import browser from "webextension-polyfill";
 
 class Question {
@@ -72,21 +72,26 @@ class Question {
             switch(correctness) {
                 // Incorrect
                 case 0: 
-                    color.backColor = "#b81414"; // Red
+                    color.backColor = "#FAA0A0"; // Red #b81414
                     color.textColor = "#FFFFFF"; // White
                     break;
 
                 // Partially correct
                 case 1: 
-                    color.backColor = "#e66815"; // Orange
+                    color.backColor = "#FAC898"; // Orange #e66815
                     color.textColor = "#FFFFFF"; // White
                     break;
 
                 // Correct
                 case 2: 
-                    color.backColor = "#369c14"; // Green
+                    color.backColor = "#A9D099"; // Green #369c14
                     color.textColor = "#FFFFFF"; // White
                     break; 
+
+                default:
+                    color.backColor = "#cfcfc4"; // Gray
+                    color.textColor = "#FFFFFF"; // White
+                    break;
             }
 
             return color;
@@ -151,7 +156,8 @@ class Question {
                 menuOptions.push(subsMenu);
             }
 
-            attachContextMenu(anchor.button, menuOptions);
+            const menu = new ContextMenu(menuOptions);
+            menu.attach(anchor.button);
         });
     }
 

@@ -47,8 +47,8 @@ class Match extends Question {
             select = this.labels[candidate];
         }
 
-        const button = MagicButton.create();
-        select.parentNode.appendChild(button);
+        const button = new MagicButton();
+        select.parentNode.appendChild(button.element);
 
         const onClick = data => {
             let option = this.options[data.sign];

@@ -69,8 +69,8 @@ class Multianswer extends Question {
         let subq = null;
 
         if ((subq = this.select[anchor.index])) {
-            const button = MagicButton.create();
-            subq.node.parentNode.appendChild(button);
+            const button = new MagicButton();
+            subq.node.parentNode.appendChild(button.element);
 
             const onClick = (data) => {
                 let option = subq.optionMap[data.sign];
@@ -95,8 +95,8 @@ class Multianswer extends Question {
         else if ((subq = this.multichoice[anchor.index])) {
 
             if ("radio" === subq.type) {
-                const button = MagicButton.create();
-                subq.answer.appendChild(button);
+                const button = new MagicButton();
+                subq.answer.appendChild(button.element);
 
                 const onClick = (data) => {
                     let choice = subq.options[data.sign];
@@ -134,8 +134,8 @@ class Multianswer extends Question {
                     choice = subq.options[candiate];
                 }
     
-                const button = MagicButton.create();
-                choice.parentNode.insertBefore(button, choice.nextSibling);
+                const button = new MagicButton();
+                choice.parentNode.insertBefore(button.element, choice.nextSibling);
                 const onClick = data => choice.checked = data.checked;
     
                 return { onClick, button };
@@ -143,8 +143,8 @@ class Multianswer extends Question {
 
         }
         else if ((subq = this.edit[anchor.index])) {
-            const button = MagicButton.create();
-            subq.input.parentNode.appendChild(button);
+            const button = new MagicButton();
+            subq.input.parentNode.appendChild(button.element);
 
             const onClick = (value) => {
                 subq.input.value = value.text;

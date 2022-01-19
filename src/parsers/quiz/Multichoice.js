@@ -29,8 +29,8 @@ class Multichoice extends Question {
 
     createWidgetAnchor(anchor) {
         if (this.type === "radio") {
-            const button = MagicButton.create();
-            this.answer.appendChild(button);
+            const button = new MagicButton();
+            this.answer.appendChild(button.element);
 
             const onClick = (data) => {
                 let choice = this.options[data.sign];
@@ -67,8 +67,8 @@ class Multichoice extends Question {
                 choice = this.options[candidate];
             }
 
-            const button = MagicButton.create();
-            choice.parentNode.insertBefore(button, choice.nextSibling);
+            const button = new MagicButton();
+            choice.parentNode.insertBefore(button.element, choice.nextSibling);
             const onClick = data => choice.checked = data.checked;
 
             return { onClick, button };

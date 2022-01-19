@@ -1,126 +1,193 @@
-/*
+/**
+ * Based on https://codepen.io/beforesemicolon/pen/abNYjKo
  * Author: Before Semicolon
- * Codepen: https://codepen.io/beforesemicolon
  */
 
-const attachContextMenu = (() => {
-    const contextMenu = document.createElement("ul");
-    let isShown = false;
+import { EventEmitter } from "events";
 
-    const hideOnResize = () => hideMenu(true);
+let menuID = 1;
 
-    function hideMenu(e) {
-        if (!isShown)
-            return;
+function getNextID() {
+    return menuID++;
+}
 
-        if (e?.target?.getAttribute("ctx-menu"))
-            return;
+class ContextMenu extends EventEmitter {
 
-        if (e === true || !contextMenu.contains(e.target)) {
-            isShown = false;
-            contextMenu.remove();
-            document.removeEventListener("click", hideMenu);
-            window.removeEventListener("resize", hideOnResize);
+    constructor(options) {
+        super();
+
+        this.options = options;
+        this.isShown = false;
+        this.menuId = getNextID();
+
+        this.menu = document.createElement("ul");
+        this.menu.classList.add("syncshare-cm");
+        this.menu.hidden = true;
+
+        this.constructMenu(this.menu, options);
+        document.body.appendChild(this.menu);
+
+        window.addEventListener("resize", e => this.hide());
+
+        document.addEventListener("click", e => {
+            const buttonId = parseInt(e.target.getAttribute("ctx-menu"));
+
+            if (buttonId === this.menuId) {
+                return;
+            }
+
+            this.hide(); 
+        });
+
+        document.addEventListener("scroll", e => {
+            if (this.isShown) {
+                this.hide();
+            }
+        });
+    }
+
+    constructMenu(root, options) {
+        for (const option of options) {
+            const isSubMenu = option.subMenu && option.subMenu.length > 0;
+            const item = this.constructOption(option);
+
+            item.addEventListener("click", e => {
+                e.stopPropagation();
+
+                if (!isSubMenu) {
+                    if (option.action) {
+                        option.action(option);
+                    }
+
+                    this.hide();
+                    this.emit("OptionClick", option);
+                }
+            });
+
+            root.appendChild(item);
+
+            if (isSubMenu) {
+                const subMenu = document.createElement("ul");
+                subMenu.classList.add("sub-menu");
+                item.appendChild(subMenu);
+
+                this.constructMenu(subMenu, option.subMenu);
+            }
         }
     }
 
-    const attachOption = (menu, opt) => {
-        const hasSubMenu = opt.subMenu && opt.subMenu.length > 0;
-
+    constructOption(option) {
         const item = document.createElement("li");
-        item.className = "context-menu-item";
+        item.classList.add("menu-item");
 
-        let iconHTML = ``;
+        const label = document.createTextNode(option.label);
+        const labelSpan = document.createElement("span");
+        labelSpan.classList.add("item-label");
+        labelSpan.appendChild(label);
+        item.appendChild(labelSpan);
 
-        if (opt.icon) {
-            const icon = opt.icon;
+        if (option.icon) {
+            const icon = document.createElement("span");
+            const iconOptions = option.icon;
 
-            const styles = [
-                icon.textColor ? `color: ${icon.textColor};` : '',
-                icon.backColor ? `background-color: ${icon.backColor};` : ''
-            ].join('');
-
-            const style = styles ? `style="${styles}"` : ''; 
-            const klass = icon.alignRight ? "post-icon" : "pre-icon"; 
-
-            if (icon.name && !icon.text) 
-                iconHTML += `<span ${style} class="${klass} icon fa ${icon.name} fa-fw"></span>`;
-
-            if (icon.text && !icon.name)
-                iconHTML += `<span ${style} class="${klass}">${icon.text}</span>`;
-        }
-
-        const optionText = `<span>${opt.label}</span>`;
-
-        let innerHTML = opt?.icon?.alignRight ? optionText + iconHTML : iconHTML + optionText;
-
-        if (hasSubMenu)
-            innerHTML += `<span class="post-icon icon fa fa-angle-right fa-fw"></span>`
-
-        item.innerHTML = innerHTML;
-
-        item.addEventListener("click", e => {
-            e.stopPropagation();
-            if (!hasSubMenu) {
-                if (opt.action) opt.action(opt);
-                hideMenu(true);
+            if (iconOptions.textColor) {
+                icon.style.color = iconOptions.textColor;
             }
-        });
 
-        menu.appendChild(item);
+            if (iconOptions.backColor) {
+                icon.style.backgroundColor = iconOptions.backColor;
+            }
 
-        if (hasSubMenu) {
-            const subMenu = document.createElement("ul");
-            subMenu.className = "context-sub-menu";
-            item.appendChild(subMenu);
-            opt.subMenu.forEach(subOpt => attachOption(subMenu, subOpt))
+            if (iconOptions.name && !iconOptions.text) {
+                icon.classList.add("icon", "fa", "fa-fw", iconOptions.name);
+            }
+            else if (iconOptions.text && !iconOptions.name) {
+                const content = document.createTextNode(iconOptions.text);
+                icon.appendChild(content);
+            }
+
+            if (iconOptions.alignRight) {
+                const postfix = document.createElement("div");
+                postfix.classList.add("postfix");
+                icon.classList.add("content");
+                postfix.appendChild(icon);
+                item.appendChild(postfix);
+            }
+            else {
+                icon.classList.add("prefix");
+                item.insertBefore(icon, labelSpan);
+            }
         }
-    };
 
-    const showMenu = (e, menuOptions) => {
-        e.preventDefault();
+        if (option.subMenu && option.subMenu.length > 0) {
+            const postfix = document.createElement("div");
+            postfix.classList.add("postfix");
 
-        isShown = true;
+            const subMenuIcon = document.createElement("span");
+            subMenuIcon.classList.add("icon", "fa", "fa-fw", "fa-angle-right", "arrow-icon");
 
-        contextMenu.className = "context-menu";
-        contextMenu.innerHTML = "";
+            postfix.appendChild(subMenuIcon);
+            item.appendChild(postfix);
+        }
 
-        menuOptions.forEach(opt => attachOption(contextMenu, opt))
-        document.body.appendChild(contextMenu);
+        return item;
+    }
+
+    show(x, y) {
+        if (this.isShown) {
+            return;
+        }
 
         const { innerWidth, innerHeight } = window;
-        const { offsetWidth, offsetHeight } = contextMenu;
-        let x = 0;
-        let y = 0;
+        const { offsetWidth, offsetHeight } = this.menu;
+        let tX = 0;
+        let tY = 0;
 
-        if (e.clientX >= (innerWidth / 2)) {
-            contextMenu.classList.add("left");
+        this.menu.classList.remove("left");
+        this.menu.classList.remove("top");
+
+        if (x >= (innerWidth / 2)) {
+            this.menu.classList.add("left");
         }
 
-        if (e.clientY >= (innerHeight / 2)) {
-            contextMenu.classList.add("top");
+        if (y >= (innerHeight / 2)) {
+            this.menu.classList.add("top");
         }
 
-        if (e.clientX >= (innerWidth - offsetWidth)) {
-            x = "-100%";
+        if (x >= (innerWidth - offsetWidth)) {
+            tX = "-100%";
         }
 
-        if (e.clientY >= (innerHeight - offsetHeight)) {
-            y = "-100%";
+        if (y >= (innerHeight - offsetHeight)) {
+            tY = "-100%";
         }
 
-        contextMenu.style.left = e.clientX + "px";
-        contextMenu.style.top = e.clientY + "px";
-        contextMenu.style.transform = `translate(${x}, ${y})`;
-        document.addEventListener("click", (e) => hideMenu(e));
-        window.addEventListener("resize", hideOnResize);
-    };
+        this.menu.style.left = x + "px";
+        this.menu.style.top = y + "px";
+        this.menu.style.transform = `translate(${tX}, ${tY})`;
+        
+        this.menu.hidden = false;
+        this.isShown = true;
+        this.emit("MenuShown");
+    }
 
-    return (element, options) => {
-        element.setAttribute("ctx-menu", "true");
-        element.addEventListener("click", e => showMenu(e, options));
-    };
+    hide() {
+        if (!this.isShown) {
+            return;
+        }
 
-})();
+        this.menu.hidden = true;
+        this.isShown = false;
+        this.emit("MenuHidden");
+    }
 
-export default attachContextMenu;
+    attach(button) {
+        button.element.setAttribute("ctx-menu", this.menuId);
+        button.element.addEventListener("click", e => {
+            this.show(e.clientX, e.clientY);
+        });
+    }
+}
+
+
+export default ContextMenu;
