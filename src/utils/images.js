@@ -1,6 +1,7 @@
 
 /**
- * Packs image metadata into one string
+ * Packs image metadata into one string:
+ * <filename.ext>;<image alt>
  * 
  * @param {HTMLImageElement} img Image to serialize
  */
@@ -17,7 +18,8 @@ function serialize(img) {
 
 
 /**
- * Packs several images into one string
+ * Packs several images into one string:
+ * <filename.ext>;<image alt>
  * 
  * @param {HTMLImageElement[]} img Images to serialize
  */
