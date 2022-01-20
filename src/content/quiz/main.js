@@ -1,7 +1,7 @@
-import Question from "Content/quiz/questions/Question";
-import TypeSelector from "Content/quiz/questions/TypeSelector";
-import Breadcrumb from "Content/common/Breadcrumb";
-import Log from "Internal/log";
+import Question from "content/quiz/questions/Question";
+import TypeSelector from "content/quiz/questions/TypeSelector";
+import Breadcrumb from "content/shared/Breadcrumb";
+import Log from "shared/debug/log";
 import browser from "webextension-polyfill";
 
 class QuizPage {

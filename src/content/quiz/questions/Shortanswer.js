@@ -1,5 +1,5 @@
-import Question from "Content/quiz/questions/Question"
-import MagicButton from "Widgets/MagicButton";
+import Question from "content/quiz/questions/Question"
+import MagicButton from "shared/widgets/MagicButton";
 
 class Shortanswer extends Question {
 

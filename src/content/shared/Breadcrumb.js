@@ -1,4 +1,4 @@
-import { removeInvisible } from "Utils/strings"
+import { removeInvisible } from "shared/utils/strings"
 
 class Breadcrumb {
 

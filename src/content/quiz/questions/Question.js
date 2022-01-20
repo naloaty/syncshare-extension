@@ -1,4 +1,4 @@
-import ContextMenu from "Widgets/ContextMenu"
+import ContextMenu from "shared/widgets/ContextMenu";
 import browser from "webextension-polyfill";
 
 class Question {

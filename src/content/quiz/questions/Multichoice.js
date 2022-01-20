@@ -1,7 +1,7 @@
-import Question from "Content/quiz/questions/Question"
-import * as Strings from "Utils/strings"
-import * as Images from "Utils/images"
-import MagicButton from "Widgets/MagicButton"
+import Question from "content/quiz/questions/Question"
+import * as Strings from "shared/utils/strings"
+import * as Images from "shared/utils/images"
+import MagicButton from "shared/widgets/MagicButton"
 
 class Multichoice extends Question {
 

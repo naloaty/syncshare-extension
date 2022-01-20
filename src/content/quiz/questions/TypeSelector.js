@@ -1,8 +1,8 @@
-import logger from "Internal/log"
-import Match from "Content/quiz/questions/Match"
-import Multianswer from "Content/quiz/questions/Multianswer"
-import Multichoice from "Content/quiz/questions/Multichoice"
-import Shortanswer from "Content/quiz/questions/Shortanswer"
+import logger from "shared/debug/log"
+import Match from "content/quiz/questions/Match"
+import Multianswer from "content/quiz/questions/Multianswer"
+import Multichoice from "content/quiz/questions/Multichoice"
+import Shortanswer from "content/quiz/questions/Shortanswer"
 
 class TypeSelector {
 

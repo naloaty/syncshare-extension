@@ -1,4 +1,4 @@
-import Button from "Widgets/Button";
+import Button from "shared/widgets/Button";
 
 class MagicButton extends Button {
 

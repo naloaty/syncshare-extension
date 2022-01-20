@@ -2,41 +2,38 @@
     "name": "syncshare-extension",
     "version": "1.0.0",
     "description": "Synchronize and share right answers to Moodle quizzes.",
-    "main": "index.js",
+    "main": "main.js",
     "scripts": {
-        "dev:build:chrome": "cross-env NODE_ENV='development' ENV_FILE='.env.dev' npx webpack --config browsers/chrome/webpack.dev.js",
-        "dev:build:firefox": "cross-env NODE_ENV='development' ENV_FILE='.env.dev' npx webpack --config browsers/firefox/webpack.dev.js",
-        "build:chrome": "npx webpack --config browsers/chrome/webpack.prod.js",
-        "build:firefox": "npx webpack --config browsers/firefox/webpack.prod.js"
+        "dev:chrome": "webpack --mode development --env chrome",
+        "build:chrome": "webpack --mode production --env chrome",
+        "dev:firefox": "webpack --mode development",
+        "build:firefox": "webpack --mode production"
     },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/Naloaty/syncshare.git"
-    },
+    "repository": "https://github.com/Naloaty/syncshare-extension",
     "keywords": [
         "moodle",
         "quiz"
     ],
-    "author": "Naloaty <naloaty.mail@gmail.com>",
+    "author": "Naloaty",
     "license": "MIT",
     "bugs": {
         "url": "https://github.com/Naloaty/syncshare/issues"
     },
     "homepage": "https://github.com/Naloaty/syncshare#readme",
     "devDependencies": {
-        "@drmikecrowe/webpack-extension-reloaderv5": "^1.2.2",
         "clean-webpack-plugin": "^4.0.0-alpha.0",
         "copy-webpack-plugin": "^9.0.0",
         "cross-env": "^7.0.3",
         "eslint": "^8.0.1",
+        "generate-json-from-js-webpack-plugin": "^0.1.1",
+        "html-webpack-plugin": "^5.5.0",
         "webextension-polyfill": "^0.8.0",
         "webpack": "^5.37.1",
         "webpack-cli": "^4.7.0",
         "webpack-merge": "^5.7.3",
-        "webpack-target-webextension": "^0.4.0"
+        "webpack-target-webextension": "^1.0.2"
     },
     "dependencies": {
-        "dotenv": "^10.0.0",
         "events": "^3.3.0",
         "string-similarity": "^4.0.4"
     }
