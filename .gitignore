@@ -1,13 +1,5 @@
 # builds
-/browsers/*/distr
-/dist/*
-
-# environment
-.env
-.env.*
+/dist
 
 # node
 /node_modules/
-
-# vs code
-# jsconfig.json
