@@ -4,22 +4,31 @@
     "description": "Synchronize and share right answers to Moodle quizzes.",
     "main": "main.js",
     "scripts": {
-        "dev:chrome": "webpack --mode development --env chrome",
+        "dev:chrome": "webpack --mode development --env chrome --watch",
+        "dev:firefox": "webpack --mode development --watch",
+
         "build:chrome": "webpack --mode production --env chrome",
-        "dev:firefox": "webpack --mode development",
-        "build:firefox": "webpack --mode production"
+        "build:firefox": "webpack --mode production",
+
+        "web-ext": "web-ext run -s dist",
+        "web-ext:lint": "web-ext lint -s dist",
+        "web-ext:build:chrome": "npm run build:chrome && web-ext build -s dist -o",
+        "web-ext:build:firefox": "npm run build:firefox && web-ext build -s dist -o",
+
+        "start:chrome": "npm run web-ext -- -t chromium -u chrome://extensions/ -u https://school.moodledemo.net/",
+        "start:firefox": "npm run web-ext -- -u about:debugging#/runtime/this-firefox -u https://school.moodledemo.net/"
     },
     "repository": "https://github.com/Naloaty/syncshare-extension",
     "keywords": [
         "moodle",
         "quiz"
     ],
-    "author": "Naloaty",
+    "author": "Naloaty <naloaty.dev@gmail.com>",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/Naloaty/syncshare/issues"
+        "url": "https://github.com/Naloaty/syncshare-extension/issues"
     },
-    "homepage": "https://github.com/Naloaty/syncshare#readme",
+    "homepage": "https://github.com/Naloaty/syncshare-extension#readme",
     "devDependencies": {
         "clean-webpack-plugin": "^4.0.0-alpha.0",
         "copy-webpack-plugin": "^9.0.0",
