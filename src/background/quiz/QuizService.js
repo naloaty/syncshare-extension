@@ -22,7 +22,7 @@ class QuizService {
             if (data?.type !== "solution-request")
                 return;
 
-            this.onSoultionRequest(data.payload, sendResponse);
+            this.onSolutionRequest(data.payload, sendResponse);
         });
 
         logger.info("QuizService: initialized");
@@ -36,7 +36,7 @@ class QuizService {
         console.log("Attempt data received", data);
     }
 
-    onSoultionRequest(body, sendResponse) {
+    onSolutionRequest(body, sendResponse) {
         console.log("Solution request received", body);
 
         if (body.qId === 1346) {
