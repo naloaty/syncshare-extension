@@ -1,5 +1,6 @@
 # builds
 /dist
+/web-ext-artifacts
 
 # node
 /node_modules/
