@@ -17,9 +17,11 @@ module.exports = (env, argv) => {
     const isDevelopment = argv?.mode === "development";
     const isChrome = Boolean(env?.chrome);
 
-    const connectUrls = [
-        env?.service_url ?? "http://localhost:5000"
-    ]
+    const connectUrls = isDevelopment ? [
+        "http://localhost:5000"
+    ] : [
+        "NOTHING YET"
+    ];
 
     return {
         context: ROOT_PATH,
@@ -76,7 +78,8 @@ module.exports = (env, argv) => {
                     commons: {
                         name: "commons",
                         chunks: "initial",
-                        minChunks: 2
+                        minChunks: 2,
+                        enforce: true
                     }
                 }
             }
