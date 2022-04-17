@@ -1,4 +1,3 @@
-import Question from "content/quiz/questions/Question";
 import TypeSelector from "content/quiz/questions/TypeSelector";
 import Breadcrumb from "content/shared/Breadcrumb";
 import Log from "shared/debug/log";
@@ -89,7 +88,7 @@ class QuizPage {
         });
     }
 
-    processReview() {        
+    processReview() {
         browser.runtime.sendMessage({
             type: "quiz-review-data",
             payload: {
@@ -114,7 +113,7 @@ if (document.querySelector("#page-mod-quiz-review")) {
     try {
         quizPage.processReview();
     } catch (e) {
-        Log.error(e, "Error occured while serving page");
+        Log.error(e, "Error occurred while serving quiz review page");
     }
 }
 else {
@@ -123,6 +122,6 @@ else {
     try {
         quizPage.processAttempt();
     } catch (e) {
-        Log.error(e, "Error occured while serving page");
+        Log.error(e, "Error occurred while serving quiz attempt page");
     }
 }
