@@ -21,7 +21,7 @@ function serialize(img) {
  * Packs several images into one string:
  * <filename.ext>;<image alt>
  * 
- * @param {HTMLImageElement[]} img Images to serialize
+ * @param {HTMLImageElement[]} images Images to serialize
  */
 function serializeArray(images) {
     let meta = [];
