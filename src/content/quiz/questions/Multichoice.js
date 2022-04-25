@@ -53,7 +53,7 @@ class Multichoice extends Question {
             return { onClick, button };
         }
         else if (this.type === "checkbox") {
-            let choice = this.options[anchor.signature];
+            let choice = this.options[anchor.sign];
 
             // Try to find similar nodes in case 
             // the text of the question has changed
