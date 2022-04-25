@@ -33,24 +33,51 @@ module.exports = ({ isChrome, isDevelopment, connectUrls = [], PACKAGE = {} } = 
         },
         permissions: connectUrls.map(x => x + "/*"),
         content_security_policy: CSP(),
-        content_scripts: [{
-            matches: [
-                "<all_urls>"
-            ],
-            include_globs: [
-                "*mod/quiz/attempt.php*",
-                "*mod/quiz/review.php*"
-            ],
-            js: [
-                "src/commons.js",
-                "src/quizattempt.js"
-            ],
-            css: [
-                "styles/magic-button.css",
-                "styles/context-menu.css"
-            ],
-            run_at: "document_end"
-        }],
+        content_scripts: [
+            {
+                matches: [
+                    "<all_urls>"
+                ],
+                include_globs: [
+                    "*mod/quiz/attempt.php*",
+                    "*mod/quiz/review.php*"
+                ],
+                js: [
+                    "src/commons.js",
+                    "src/quizattempt.js"
+                ],
+                css: [
+                    "styles/magic-button.css",
+                    "styles/context-menu.css"
+                ],
+                run_at: "document_end"
+            },
+            {
+                matches: [
+                    "<all_urls>"
+                ],
+                include_globs: [
+                    "*mod/quiz/summary.php*",
+                ],
+                js: [
+                    "src/commons.js",
+                    "src/quizoverview.js"
+                ],
+                run_at: "document_end"
+            },
+            {
+                matches: [
+                    "<all_urls>"
+                ],
+                include_globs: [
+                    "*mod/quiz/view.php*",
+                ],
+                js: [
+                    "src/commons.js",
+                    "src/quizboard.js"
+                ],
+                run_at: "document_end"
+            }],
         background: {
             page: "src/background.html"
         },

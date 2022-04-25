@@ -7,17 +7,34 @@ class QuizPage {
 
     constructor() {
         const url = new URL(window.location.href);
+        const bc = new Breadcrumb();
 
-        this.breadcrumb = new Breadcrumb();
-
-        /** @type {string} */
-        this.host = null || url.host;
-
-        /** @type {number} */
-        this.quizId = null || parseInt(url.searchParams.get("cmid"));
-
-        /** @type {number} */
-        this.attemptId = null || parseInt(url.searchParams.get("attempt"));
+        /**
+         * @type     {Object}
+         * @property {String} host
+         * @property {Object} course
+         * @property {number} course.id
+         * @property {String} course.name
+         * @property {Object} quiz
+         * @property {number} quiz.id
+         * @property {String} quiz.name
+         * @property {Object} attempt
+         * @property {number} attempt.id
+         * */
+        this.meta = {
+            host: url.host,
+            course: {
+                id:   bc.courseId,
+                name: bc.courseName
+            },
+            quiz: {
+                id: parseInt(url.searchParams.get("cmid")) || bc.quizId,
+                name: bc.quizName
+            },
+            attempt: {
+                id: parseInt(url.searchParams.get("attempt"))
+            }
+        }
 
         /** @type {Question[]} */
         this.questions = [];
@@ -48,9 +65,9 @@ class QuizPage {
 
     processAttempt() {
         const body = {
-            host:     this.host,
-            courseId: this.breadcrumb.courseId,
-            quizId:   this.quizId || this.breadcrumb.quizId,
+            host:     this.meta.host,
+            courseId: this.meta.course.id,
+            quizId:   this.meta.quiz.id,
             qId:      -1
         }
         
@@ -76,15 +93,15 @@ class QuizPage {
             browser.runtime.sendMessage({
                 type: "quiz-attempt-data",
                 payload: {
-                    host:       this.host,
-                    courseId:   this.breadcrumb.courseId,
-                    courseName: this.breadcrumb.courseName,
-                    quizId:     this.quizId || this.breadcrumb.quizId,
-                    quizName:   this.breadcrumb.quizName,
-                    attemptId:  this.attemptId,
+                    host:       this.meta.host,
+                    courseId:   this.meta.course.id,
+                    courseName: this.meta.course.name,
+                    quizId:     this.meta.quiz.id,
+                    quizName:   this.meta.quiz.name,
+                    attemptId:  this.meta.attempt.id,
                     questions:  this.serializeQuestions()
                 }
-            })
+            });
         });
     }
 
@@ -92,23 +109,51 @@ class QuizPage {
         browser.runtime.sendMessage({
             type: "quiz-review-data",
             payload: {
-                host:       this.host,
-                courseId:   this.breadcrumb.courseId,
-                courseName: this.breadcrumb.courseName,
-                quizId:     this.quizId || this.breadcrumb.quizId,
-                quizName:   this.breadcrumb.quizName,
-                attemptId:  this.attemptId,
+                host:       this.meta.host,
+                courseId:   this.meta.course.id,
+                courseName: this.meta.course.name,
+                quizId:     this.meta.quiz.id,
+                quizName:   this.meta.quiz.name,
+                attemptId:  this.meta.attempt.id,
                 questions:  this.serializeQuestions()
             }
-        })
+        });
     }
 }
 
 
 const quizPage = new QuizPage();
 
+// Check if page can be served
+let supported = true;
+const m = quizPage.meta;
+
+if (!m.host)
+    supported = false;
+else if (!m.quiz.id || !m.quiz.name)
+    supported = false;
+else if (!m.course.id || !m.course.name)
+    supported = false;
+else if (!m.attempt.id)
+    supported = false;
+
+if (!supported) {
+    throw new Error("QuizPage: Page is not supported");
+}
+
+Log.info("QuizPage: Page is supported")
+
+
 if (document.querySelector("#page-mod-quiz-review")) {
-    Log.info("QuizPage: serving as review");
+    Log.info("QuizPage: serving as a review");
+
+    browser.runtime.sendMessage({
+        type: "review-page-open",
+        payload: {
+            quizId:    m.quiz.id,
+            attemptId: m.attempt.id,
+        }
+    });
 
     try {
         quizPage.processReview();
@@ -117,7 +162,15 @@ if (document.querySelector("#page-mod-quiz-review")) {
     }
 }
 else {
-    Log.info("QuizPage: serving as attempt");
+    Log.info("QuizPage: serving as an attempt");
+
+    browser.runtime.sendMessage({
+        type: "attempt-page-open",
+        payload: {
+            quizId:    m.quiz.id,
+            attemptId: m.attempt.id,
+        }
+    });
 
     try {
         quizPage.processAttempt();

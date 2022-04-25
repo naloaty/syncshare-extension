@@ -1,7 +1,7 @@
 /* eslint-env node */
 
 const { readFileSync } = require("fs");
-const Webpack = require("webpack");
+const webpack = require("webpack");
 const { join } = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const WebExtensionPlugin = require("webpack-target-webextension");
@@ -12,7 +12,6 @@ const PACKAGE = require("./package.json");
 
 const ROOT_PATH = __dirname;
 
-/** @type {Webpack.Configuration} */
 module.exports = (env, argv) => {
     const isDevelopment = argv?.mode === "development";
     const isChrome = Boolean(env?.chrome);
@@ -32,6 +31,8 @@ module.exports = (env, argv) => {
 
             /** Content */
             quizattempt: join(ROOT_PATH, "src/content/quiz/main.js"),
+            quizoverview: join(ROOT_PATH, "src/content/quiz/overview.js"),
+            quizboard: join(ROOT_PATH, "src/content/quiz/board.js")
         },
         stats: {
             errorDetails: true
@@ -53,7 +54,7 @@ module.exports = (env, argv) => {
                     { from: join(ROOT_PATH, "src/_locales"), to: "_locales" }
                 ]
             }),
-            new Webpack.DefinePlugin({
+            new webpack.DefinePlugin({
                 SERVICE_URL: JSON.stringify(env?.SERVICE_URL),
                 VERSION:     JSON.stringify(PACKAGE.version)
             }),
