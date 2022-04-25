@@ -15,22 +15,24 @@ class Breadcrumb {
         /** @type {number} */
         this.quizId = null;
 
+        const items = document.querySelectorAll(".breadcrumb a");
 
-        document.querySelectorAll(".breadcrumb a").forEach(a => {
-            const url = new URL(a.href);
+        for (const item of items) {
+            const url = new URL(item.href);
 
-            switch (url.pathname) {
-                case "/course/view.php":
-                    this.courseName = removeInvisible(a.innerText);
-                    this.courseId = parseInt(url.searchParams.get("id"));
-                    break;
+            if (url.pathname.includes("/course/view.php")) {
+                if (this.courseName) continue;
 
-                case "/mod/quiz/view.php":
-                    this.quizName = removeInvisible(a.innerText);
-                    this.quizId = parseInt(url.searchParams.get("id"));
-                    break;
+                this.courseId = parseInt(url.searchParams.get("id"));
+                this.courseName = removeInvisible(item.innerText);
             }
-        });
+            else if (url.pathname.includes("/mod/quiz/view.php")) {
+                if (this.quizName) continue;
+
+                this.quizId = parseInt(url.searchParams.get("id"));
+                this.quizName = removeInvisible(item.innerText);
+            }
+        }
     }
 }
 
