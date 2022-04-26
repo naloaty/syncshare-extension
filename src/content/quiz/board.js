@@ -1,9 +1,16 @@
-import Breadcrumb from "content/shared/Breadcrumb";
 import Log from "shared/debug/log";
 import browser from "webextension-polyfill";
+import MultiSource from "shared/utils/MultiSource";
+import BreadcrumbSource from "content/quiz/sources/BreadcrumbSource";
+import URLSource from "content/quiz/sources/board/URLSource";
 
-const url = new URL(window.location.href);
-const bc = new Breadcrumb();
+const page = new MultiSource(
+    new BreadcrumbSource(),
+    new URLSource()
+);
+
+/** @type {String[]} */
+const bcItems = page.get("bcItems");
 
 /**
  * @type     {Object}
@@ -16,14 +23,14 @@ const bc = new Breadcrumb();
  * @property {String} quiz.name
  * */
 const m = {
-    host: url.host,
+    host: page.get("host"),
     course: {
-        id: bc.courseId,
-        name: bc.courseName
+        id: page.get("courseId"),
+        name: page.get("courseName")
     },
     quiz: {
-        id: parseInt(url.searchParams.get("id")) || bc.quizId,
-        name: bc.quizName
+        id: page.get("quizId"),
+        name: page.get("quizName") || bcItems[bcItems.length - 1]
     }
 }
 
@@ -37,17 +44,13 @@ else if (!m.quiz.id || !m.quiz.name)
 else if (!m.course.id || !m.course.name)
     supported = false;
 
-console.log(m);
-
 if (!supported) {
-    throw new Error("BoardPage: Page is not supported");
+    throw new Error("BoardPage: NotSupported: Missing required parameters");
 }
 
-Log.info("BoardPage: Page is supported!");
+Log.info("BoardPage: Check passed");
 
 browser.runtime.sendMessage({
     type: "board-page-open",
-    payload: {
-        quizId: m.quiz.id
-    }
+    payload: { ...m }
 });

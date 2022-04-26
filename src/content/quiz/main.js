@@ -1,13 +1,19 @@
 import TypeSelector from "content/quiz/questions/TypeSelector";
-import Breadcrumb from "content/shared/Breadcrumb";
 import Log from "shared/debug/log";
 import browser from "webextension-polyfill";
+import MultiSource from "shared/utils/MultiSource";
+import BreadcrumbSource from "content/quiz/sources/BreadcrumbSource";
+import LinkSource from "content/quiz/sources/quiz/LinkSource";
+import URLSource from "content/quiz/sources/quiz/URLSource";
 
 class QuizPage {
 
     constructor() {
-        const url = new URL(window.location.href);
-        const bc = new Breadcrumb();
+        const page = new MultiSource(
+            new BreadcrumbSource(),
+            new LinkSource(),
+            new URLSource()
+        );
 
         /**
          * @type     {Object}
@@ -22,17 +28,17 @@ class QuizPage {
          * @property {number} attempt.id
          * */
         this.meta = {
-            host: url.host,
+            host: page.get("host"),
             course: {
-                id:   bc.courseId,
-                name: bc.courseName
+                id:   page.get("courseId"),
+                name: page.get("courseName")
             },
             quiz: {
-                id: parseInt(url.searchParams.get("cmid")) || bc.quizId,
-                name: bc.quizName
+                id: page.get("quizId"),
+                name: page.get("quizName")
             },
             attempt: {
-                id: parseInt(url.searchParams.get("attempt"))
+                id: page.get("attemptId")
             }
         }
 
@@ -125,23 +131,13 @@ class QuizPage {
 const quizPage = new QuizPage();
 
 // Check if page can be served
-let supported = true;
 const m = quizPage.meta;
 
-if (!m.host)
-    supported = false;
-else if (!m.quiz.id || !m.quiz.name)
-    supported = false;
-else if (!m.course.id || !m.course.name)
-    supported = false;
-else if (!m.attempt.id)
-    supported = false;
-
-if (!supported) {
-    throw new Error("QuizPage: Page is not supported");
+if (!m.quiz.id || !m.attempt.id) {
+    throw new Error("QuizPage: NotSupported: Missing required parameters");
 }
 
-Log.info("QuizPage: Page is supported")
+Log.info("QuizPage: Check passed")
 
 
 if (document.querySelector("#page-mod-quiz-review")) {

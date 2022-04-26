@@ -1,61 +1,28 @@
-import Breadcrumb from "content/shared/Breadcrumb";
 import Log from "shared/debug/log";
 import browser from "webextension-polyfill";
+import MultiSource from "shared/utils/MultiSource";
+import BreadcrumbSource from "content/quiz/sources/BreadcrumbSource";
+import URLSource from "content/quiz/sources/quiz/URLSource";
 
-const url = new URL(window.location.href);
-const bc = new Breadcrumb();
+const page = new MultiSource(
+    new BreadcrumbSource(),
+    new URLSource()
+);
 
-/**
- * @type     {Object}
- * @property {String} host
- * @property {Object} course
- * @property {number} course.id
- * @property {String} course.name
- * @property {Object} quiz
- * @property {number} quiz.id
- * @property {String} quiz.name
- * @property {Object} attempt
- * @property {number} attempt.id
- * */
-const m = {
-    host: url.host,
-    course: {
-        id: bc.courseId,
-        name: bc.courseName
-    },
-    quiz: {
-        id: parseInt(url.searchParams.get("cmid")) || bc.quizId,
-        name: bc.quizName
-    },
-    attempt: {
-        id: parseInt(url.searchParams.get("attempt"))
-    }
-}
+const quizId = page.get("quizId");
 
 // Check if page can be served
 let supported = true;
 
-if (!m.host)
-    supported = false;
-else if (!m.quiz.id || !m.quiz.name)
-    supported = false;
-else if (!m.course.id || !m.course.name)
-    supported = false;
-else if (!m.attempt.id)
-    supported = false;
-
-if (!supported) {
-    throw new Error("OverviewPage: Page is not supported");
+if (!quizId) {
+    throw new Error("OverviewPage: NotSupported: Missing required parameters");
 }
 
-Log.info("OverviewPage: Page is supported!");
+Log.info("OverviewPage: Check passed");
 
 browser.runtime.sendMessage({
     type: "overview-page-open",
-    payload: {
-        quizId:    m.quiz.id,
-        attemptId: m.attempt.id,
-    }
+    payload: { quizId }
 });
 
 const submitBtn = document.querySelector("form[action*=\"processattempt.php\"] > button[type=\"submit\"]");
@@ -74,10 +41,7 @@ submitBtn.addEventListener("click", event => {
         confirmBtn.addEventListener("click", event => {
             browser.runtime.sendMessage({
                 type: "btn-submit-attempt",
-                payload: {
-                    quizId:    m.quiz.id,
-                    attemptId: m.attempt.id,
-                }
+                payload: { quizId }
             });
         });
     }, 500);
