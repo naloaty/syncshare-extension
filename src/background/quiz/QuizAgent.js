@@ -16,10 +16,30 @@ class Route {
         /** @type {number} */
         this.state = 0;
 
-        /** @type {number} */
-        this.quizId = -1;
+        /** @type {String} host */
+        this.host = null;
 
-        /** @type {number} */
+        /**
+         * @type     {Object}
+         * @property {number} id
+         * @property {String} name
+         * */
+        this.course = {
+            id: -1,
+            name: null
+        }
+
+        /**
+         * @type     {Object}
+         * @property {number} id
+         * @property {String} name
+         * */
+        this.quiz = {
+            id: -1,
+            name: null
+        }
+
+        /** @type {number} id */
         this.attemptId = -1;
     }
 
@@ -89,15 +109,20 @@ class QuizAgent {
         Log.info("QuizAgent: initialized");
     }
 
-    onAttemptPage(data) {
+    /**
+     * @param    {Object} meta
+     * @property {String} meta.quizId
+     * @property {String} meta.attemptId
+     * */
+    onAttemptPage(meta) {
         for (const route of this.routes) {
-            if (route.quizId !== data.quizId)
+            if (route.quiz.id !== meta.quizId)
                 continue;
 
             switch (route.state) {
                 case State.New:
                     route.state = State.Attempt;
-                    route.attemptId = data.attemptId;
+                    route.attemptId = meta.attemptId;
                     route.onAttempt();
                     break;
 
@@ -114,9 +139,13 @@ class QuizAgent {
         }
     }
 
-    onOverviewPage(data) {
+    /**
+     * @param    {Object} meta
+     * @property {String} meta.quizId
+     * */
+    onOverviewPage(meta) {
         for (const route of this.routes) {
-            if (route.attemptId !== data.attemptId)
+            if (route.quiz.id !== meta.quizId)
                 continue;
 
             switch (route.state) {
@@ -133,9 +162,13 @@ class QuizAgent {
         }
     }
 
-    onSubmitAttempt(data) {
+    /**
+     * @param    {Object} meta
+     * @property {String} meta.quizId
+     * */
+    onSubmitAttempt(meta) {
         for (const route of this.routes) {
-            if (route.attemptId !== data.attemptId)
+            if (route.quiz.id !== meta.quizId)
                 continue;
 
             switch (route.state) {
@@ -152,9 +185,13 @@ class QuizAgent {
         }
     }
 
-    onReviewPage(data) {
+    /**
+     * @param    {Object} meta
+     * @property {String} meta.quizId
+     * */
+    onReviewPage(meta) {
         for (const route of this.routes) {
-            if (route.attemptId !== data.attemptId)
+            if (route.quiz.id !== meta.quizId)
                 continue;
 
             switch (route.state) {
@@ -171,9 +208,19 @@ class QuizAgent {
         }
     }
 
-    onBoardPage(data) {
+    /**
+     * @param    {Object} meta
+     * @property {String} meta.host
+     * @property {Object} meta.course
+     * @property {number} meta.course.id
+     * @property {String} meta.course.name
+     * @property {Object} meta.quiz
+     * @property {number} meta.quiz.id
+     * @property {String} meta.quiz.name
+     * */
+    onBoardPage(meta) {
         for (const route of this.routes) {
-            if (route.quizId !== data.quizId)
+            if (route.quiz.id !== meta.quiz.id)
                 continue;
 
             switch (route.state) {
@@ -190,8 +237,10 @@ class QuizAgent {
         }
 
         const route = new Route();
-        route.state = State.New;
-        route.quizId = data.quizId;
+        route.state  = State.New;
+        route.host   = meta.host;
+        route.course = meta.course;
+        route.quiz   = meta.quiz;
 
         this.routes.push(route);
     }
