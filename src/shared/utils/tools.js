@@ -10,7 +10,7 @@ function hashString(str) {
     }
 
     return hash;
-};
+}
 
 function hashImage(imageNode) {
     const comma = imageNode.src.lastIndexOf('/');
