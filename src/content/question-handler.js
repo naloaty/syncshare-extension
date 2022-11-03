@@ -25,6 +25,9 @@ const QuestionHandler = (() => {
 
             const info = queDiv.childNodes[0];
 
+            // TODO: FIX regular expression
+            // Grade NOT detected: Баллов: 1 из 1
+            // Grade detected: Баллов: 1,0 из 1,0
             const regex = /\d{1,}[,.]\d{1,}/g;
             const element = info.querySelector("div.grade");
 
