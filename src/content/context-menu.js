@@ -3,7 +3,6 @@
  * Codepen: https://codepen.io/beforesemicolon
  */
 import Mediator from "@/core/transport.js";
-import { Events } from  "@/core/analytics.js"
 import PageMeta from "@/content/page-parser";
 import hotkeys from 'hotkeys-js';
 
@@ -35,7 +34,9 @@ const attachContextMenu = (() => {
         item.addEventListener("click", e => {
             e.stopPropagation();
             if (!opt.subMenu || opt.subMenu.length === 0) {
-                window.umami.trackEvent("Magic value fill", Events.click);
+                window.umami.trackEvent("Magic value fill", {
+                    type: "click"
+                });
 
                 Mediator.publish("magic-used", { 
                     attemptId: PageMeta.attemptId
@@ -120,7 +121,9 @@ const attachContextMenu = (() => {
     return (el, options) => {
         el.setAttribute("ctx-menu", "true");
         el.addEventListener("click", (e) => {
-            window.umami.trackEvent("Magic menu open", Events.click);
+            window.umami.trackEvent("Magic menu open", {
+                type: "click"
+            });
 
             Mediator.publish("menu-opened", { 
                 attemptId: PageMeta.attemptId

@@ -1,3 +1,4 @@
+import "@/core/umami.js";
 import Mediator from "@/core/transport.js";
 import QuestionHandler from "@/content/question-handler.js";
 import PageMeta from "@/content/page-parser";

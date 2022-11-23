@@ -1,3 +1,4 @@
+import "@/core/umami.js";
 import Mediator from "@/core/transport.js";
 import { log } from "@/core/log";
 import * as MSG from "@/content/messages";

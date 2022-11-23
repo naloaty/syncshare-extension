@@ -1,260 +1,237 @@
-import { sessionStorage } from "@/core/session-storage.js";
+import { log } from "@/core/log";
 
-(function () {
-  'use strict';
+const initUmami = (window) => {
+  const {
+    screen: { width, height },
+    navigator: { language },
+    location,
+    localStorage,
+    document,
+    history,
+  } = window;
+  const { hostname, pathname, search } = location;
+  const { currentScript } = document;
 
-  if (DISABLE_ANALYTICS) {
-    if (!window.umami) {
-        let umami = {};
+  // if (!currentScript) return;
 
-        umami.trackView = () => {};
-        umami.trackEvent = () => {};
-        umami.addEvents = () => {};
-        umami.removeEvents = () => {};
-  
-        window.umami = umami;
-    }
+  const assign = (a, b) => {
+    Object.keys(b).forEach(key => {
+      if (b[key] !== undefined) a[key] = b[key];
+    });
+    return a;
+  };
 
-    return;
-  }
+  const hook = (_this, method, callback) => {
+    const orig = _this[method];
 
-  function removeTrailingSlash(url) {
-    return url && url.length > 1 && url.endsWith('/') ? url.slice(0, -1) : url;
-  }
-
-  var hook = function (_this, method, callback) {
-    var orig = _this[method];
-
-    return function () {
-      var args = [], len = arguments.length;
-      while ( len-- ) args[ len ] = arguments[ len ];
-
+    return (...args) => {
       callback.apply(null, args);
 
       return orig.apply(_this, args);
     };
   };
 
-  var doNotTrack = function () {
-    var doNotTrack = window.doNotTrack;
-    var navigator = window.navigator;
-    var external = window.external;
+  const doNotTrack = () => {
+    const { doNotTrack, navigator, external } = window;
 
-    var msTracking = function () {
-      return (
-        external &&
-        typeof external.msTrackingProtectionEnabled === 'function' &&
-        external.msTrackingProtectionEnabled()
-      );
+    const msTrackProtection = 'msTrackingProtectionEnabled';
+    const msTracking = () => {
+      return external && msTrackProtection in external && external[msTrackProtection]();
     };
 
-    var dnt = doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || msTracking();
+    const dnt = doNotTrack || navigator.doNotTrack || navigator.msDoNotTrack || msTracking();
 
-    return dnt === true || dnt === 1 || dnt === 'yes' || dnt === '1';
+    return dnt == '1' || dnt === 'yes';
   };
 
-  (function (window) {
-    var window_screen = window.screen;
-    var width = window_screen.width;
-    var height = window_screen.height;
-    var language = window.navigator.language;
-    var window_location = window.location;
-    var hostname = window_location.hostname;
-    var pathname = window_location.pathname;
-    var search = window_location.search;
-    var localStorage = window.localStorage;
-
-    // sessionStorage is different for background and content scripts.
-    // This is why we use only sessionStorage on background page (Mediator)
-    // var sessionStorage = window.sessionStorage;
-
-    var document = window.document;
-    var history = window.history;
-
-    // var script = document.querySelector('script[data-website-id]');
-
-    // if (!script) { return; }
-
-    // var attr = function (key) { return script && script.getAttribute(key); };
-    var website = ANALYTICS_ID;
-    var hostUrl = ANALYTICS_URL;
-    // var autoTrack = attr('data-auto-track') !== 'false';
-    // var dnt = attr('data-do-not-track');
-    // var useCache = attr('data-cache');
-    // var domains = attr('data-domains');
-
-    var autoTrack = true;
-    var dnt = undefined;
-    var useCache = true;
-    var domains = undefined;
-
-    var disableTracking =
-      localStorage.getItem('umami.disabled') ||
+  const trackingDisabled = () =>
+      (localStorage && localStorage.getItem('umami.disabled')) ||
       (dnt && doNotTrack()) ||
-      (domains &&
-        !domains
-          .split(',')
-          .map(function (n) { return n.trim(); })
-          .includes(hostname));
+      (domain && !domains.includes(hostname));
 
-    var root = hostUrl
-      ? removeTrailingSlash(hostUrl)
-      : script.src.split('/').slice(0, -1).join('/');
-    var screen = width + "x" + height;
-    var listeners = [];
-    var currentUrl = "" + pathname + search;
-    var currentRef = document.referrer;
+  const _data = 'data-';
+  const _false = 'false';
+  //const attr = currentScript.getAttribute.bind(currentScript);
 
-    /* Collect metrics */
+  // const website = attr(_data + 'website-id');
+  // const hostUrl = attr(_data + 'host-url');
+  // const autoTrack = attr(_data + 'auto-track') !== _false;
+  //const dnt = attr(_data + 'do-not-track');
+  //const cssEvents = attr(_data + 'css-events') !== _false;
+  //const domain = attr(_data + 'domains') || '';
+  const website = ANALYTICS_ID;
+  const hostUrl = ANALYTICS_URL;
+  const autoTrack = true;
+  const dnt = false;
+  const cssEvents = false;
+  const domain = '';
 
-    var post = function (url, data, callback) {
-      var req = new XMLHttpRequest();
-      req.open('POST', url, true);
-      req.setRequestHeader('Content-Type', 'application/json');
+  const domains = domain.split(',').map(n => n.trim());
+  const root = hostUrl
+ //     ? hostUrl.replace(/\/$/, '')
+ //     : currentScript.src.split('/').slice(0, -1).join('/');
+  const endpoint = `${root}/api/collect`;
+  const screen = `${width}x${height}`;
+  const eventClass = /^umami--([a-z]+)--([\w]+[\w-]*)$/;
+  const eventSelect = "[class*='umami--']";
 
-      req.onreadystatechange = function () {
-        if (req.readyState === 4) {
-          callback && callback(req.response);
+  let listeners = {};
+  let currentUrl = `${pathname}${search}`;
+  let currentRef = document.referrer;
+  let cache;
+
+  /* Collect metrics */
+
+  const getPayload = () => ({
+    website,
+    hostname,
+    screen,
+    language,
+    url: currentUrl,
+  });
+
+  const collect = (type, payload) => {
+    if (trackingDisabled()) return;
+
+    return fetch(endpoint, {
+      method: 'POST',
+      body: JSON.stringify({ type, payload }),
+      headers: assign({ 'Content-Type': 'application/json' }, { ['x-umami-cache']: cache }),
+    })
+        .then(res => res.text())
+        .then(text => (cache = text));
+  };
+
+  const trackView = (url = currentUrl, referrer = currentRef, websiteUuid = website) =>
+      collect(
+          'pageview',
+          assign(getPayload(), {
+            website: websiteUuid,
+            url,
+            referrer,
+          }),
+      );
+
+  const trackEvent = (eventName, eventData, url = currentUrl, websiteUuid = website) =>
+      collect(
+          'event',
+          assign(getPayload(), {
+            website: websiteUuid,
+            url,
+            event_name: eventName,
+            event_data: eventData,
+          }),
+      );
+
+  /* Handle events */
+
+  const addEvents = node => {
+    const elements = node.querySelectorAll(eventSelect);
+    Array.prototype.forEach.call(elements, addEvent);
+  };
+
+  const addEvent = element => {
+    const get = element.getAttribute.bind(element);
+    (get('class') || '').split(' ').forEach(className => {
+      if (!eventClass.test(className)) return;
+
+      const [, event, name] = className.split('--');
+
+      const listener = listeners[className]
+          ? listeners[className]
+          : (listeners[className] = e => {
+            if (
+                event === 'click' &&
+                element.tagName === 'A' &&
+                !(
+                    e.ctrlKey ||
+                    e.shiftKey ||
+                    e.metaKey ||
+                    (e.button && e.button === 1) ||
+                    get('target')
+                )
+            ) {
+              e.preventDefault();
+              trackEvent(name).then(() => {
+                const href = get('href');
+                if (href) {
+                  location.href = href;
+                }
+              });
+            } else {
+              trackEvent(name);
+            }
+          });
+
+      element.addEventListener(event, listener, true);
+    });
+  };
+
+  /* Handle history changes */
+
+  const handlePush = (state, title, url) => {
+    if (!url) return;
+
+    currentRef = currentUrl;
+    const newUrl = url.toString();
+
+    if (newUrl.substring(0, 4) === 'http') {
+      currentUrl = '/' + newUrl.split('/').splice(3).join('/');
+    } else {
+      currentUrl = newUrl;
+    }
+
+    if (currentUrl !== currentRef) {
+      trackView();
+    }
+  };
+
+  const observeDocument = () => {
+    const monitorMutate = mutations => {
+      mutations.forEach(mutation => {
+        const element = mutation.target;
+        addEvent(element);
+        addEvents(element);
+      });
+    };
+
+    const observer = new MutationObserver(monitorMutate);
+    observer.observe(document, { childList: true, subtree: true });
+  };
+
+  /* Global */
+
+
+  if (!window.umami) {
+    const umami = eventValue => trackEvent(eventValue);
+    umami.trackView = trackView;
+    umami.trackEvent = trackEvent;
+
+    window.umami = umami;
+  }
+
+  /* Start */
+
+  if (autoTrack && !trackingDisabled()) {
+    history.pushState = hook(history, 'pushState', handlePush);
+    history.replaceState = hook(history, 'replaceState', handlePush);
+
+    const update = () => {
+      if (document.readyState === 'complete') {
+        trackView();
+
+        if (cssEvents) {
+          addEvents(document);
+          observeDocument();
         }
-      };
-
-      req.send(JSON.stringify(data));
-    };
-
-    var collect = async function (type, params, uuid) {
-      if (disableTracking) { return; }
-
-      var key = 'umami.cache';
-
-      var payload = {
-        website: uuid,
-        hostname: hostname,
-        screen: screen,
-        language: language,
-        cache: useCache && await sessionStorage.getItem(key),
-      };
-
-      if (params) {
-        Object.keys(params).forEach(function (key) {
-          payload[key] = params[key];
-        });
       }
-
-      post(
-        (root + "/api/collect"),
-        {
-          type: type,
-          payload: payload,
-        },
-        function (res) { return useCache && sessionStorage.setItem(key, res); }
-      );
     };
 
-    var trackView = function (url, referrer, uuid) {
-        if ( url === void 0 ) url = currentUrl;
-        if ( referrer === void 0 ) referrer = currentRef;
-        if ( uuid === void 0 ) uuid = website;
+    document.addEventListener('readystatechange', update, true);
 
-        return collect(
-        'pageview',
-        {
-          url: url,
-          referrer: referrer,
-        },
-        uuid
-      );
-    };
+    update();
+  }
+}
 
-    var trackEvent = function (event_value, event_type, url, uuid) {
-        if ( event_type === void 0 ) event_type = 'custom';
-        if ( url === void 0 ) url = currentUrl;
-        if ( uuid === void 0 ) uuid = website;
-
-        return collect(
-        'event',
-        {
-          event_type: event_type,
-          event_value: event_value,
-          url: url,
-        },
-        uuid
-      );
-    };
-
-    /* Handle events */
-
-    var addEvents = function () {
-      document.querySelectorAll("[class*='umami--']").forEach(function (element) {
-        element.className.split(' ').forEach(function (className) {
-          if (/^umami--([a-z]+)--([\w]+[\w-]*)$/.test(className)) {
-            var ref = className.split('--');
-            var type = ref[1];
-            var value = ref[2];
-            var listener = function () { return trackEvent(value, type); };
-
-            listeners.push([element, type, listener]);
-            element.addEventListener(type, listener, true);
-          }
-        });
-      });
-    };
-
-    var removeEvents = function () {
-      listeners.forEach(function (ref) {
-        var element = ref[0];
-        var type = ref[1];
-        var listener = ref[2];
-
-        element && element.removeEventListener(type, listener, true);
-      });
-      listeners.length = 0;
-    };
-
-    /* Handle history changes */
-
-    var handlePush = function (state, title, url) {
-      if (!url) { return; }
-
-      removeEvents();
-
-      currentRef = currentUrl;
-      var newUrl = url.toString();
-
-      if (newUrl.substring(0, 4) === 'http') {
-        currentUrl = '/' + newUrl.split('/').splice(3).join('/');
-      } else {
-        currentUrl = newUrl;
-      }
-
-      if (currentUrl !== currentRef) {
-        trackView(currentUrl, currentRef);
-      }
-
-      setTimeout(addEvents, 300);
-    };
-
-    /* Global */
-
-    if (!window.umami) {
-      var umami = function (event_value) { return trackEvent(event_value); };
-      umami.trackView = trackView;
-      umami.trackEvent = trackEvent;
-      umami.addEvents = addEvents;
-      umami.removeEvents = removeEvents;
-
-      window.umami = umami;
-    }
-
-    /* Start */
-
-    if (autoTrack && !disableTracking) {
-      history.pushState = hook(history, 'pushState', handlePush);
-      history.replaceState = hook(history, 'replaceState', handlePush);
-
-      trackView(currentUrl, currentRef);
-
-      addEvents();
-    }
-  })(window);
-
-}());
+initUmami(window);
+log("Analytics initialized");

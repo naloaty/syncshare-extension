@@ -1,3 +1,4 @@
+import "@/core/umami.js";
 import Mediator from "@/core/transport.js";
 import PageMeta from "@/content/page-parser";
 import { log } from "@/core/log";

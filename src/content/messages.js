@@ -2,7 +2,6 @@ import "@/core/umami.js";
 import Mediator from "@/core/transport.js";
 import Modal from "modal-vanilla";
 import { log } from "@/core/log";
-import { Events } from  "@/core/analytics.js";
 
 log("*Messages* content script loaded !");
 
@@ -15,7 +14,7 @@ Mediator.subscribe("on-messages-updated", data => {
     showOtherMessages();
 });
 
-function setMessage(dialog, delay, type, location) {
+function setMessage(dialog, delay, messageTag, location) {
     setTimeout(() => {
         const modal = dialog.show();
         modal.once("dismiss", function (modal, ev, button) {
@@ -24,7 +23,12 @@ function setMessage(dialog, delay, type, location) {
             }
 
             if (button && button.text) {
-                window.umami.trackEvent(`Modal action (${location}, ${type}: ${button.text})`, Events.click);
+                window.umami.trackEvent(`Message action`, {
+                    type: "click",
+                    message_location: location,
+                    message_tag: messageTag,
+                    button_text: button.text
+                });
             }
         });
     }, delay);
@@ -40,7 +44,10 @@ function showDonationMessage(setter, location) {
         const donation = new Modal(messages.content.donation);
 
         setMessage(donation, delay, "donation", location);
-        window.umami.trackEvent(`Donation shown (${location})`, Events.modal);
+        window.umami.trackEvent("Donation message shown", {
+            type: "message",
+            message_location: location
+        });
     }
 }
 
@@ -54,7 +61,10 @@ function showOutdatedMessage(setter, location) {
         const outdated = new Modal(messages.content.outdated);
 
         setMessage(outdated, delay, "outdated", location);
-        window.umami.trackEvent(`Outdated shown (${location})`, Events.modal);
+        window.umami.trackEvent("Outdated message shown", {
+            type: "message",
+            message_location: location
+        });
     }
 }
 
@@ -68,7 +78,10 @@ function showStatusMessage(setter, location) {
         const status = new Modal(messages.content.status);
 
         setMessage(status, delay, "status", location);
-        window.umami.trackEvent(`Status shown (${location})`, Events.modal);
+        window.umami.trackEvent("Status message shown", {
+            type: "message",
+            message_location: location
+        });
     }
 }
 
@@ -106,7 +119,10 @@ function showOtherMessages() {
 
         const modal = new Modal(content);
         setMessage(modal, settings.delay, "plain","view");
-        window.umami.trackEvent(`Plain message shown (${location})`, Events.modal);
+        window.umami.trackEvent("Plain message shown", {
+            type: "message",
+            message_location: location
+        });
     }
 }
 

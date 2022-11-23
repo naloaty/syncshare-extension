@@ -1,6 +1,5 @@
 import "@/core/umami.js";
 import Mediator from "@/core/transport.js";
-import { Events } from "@/core/analytics.js";
 import { log } from "@/core/log";
 import axios from "axios";
 
@@ -9,24 +8,8 @@ log("*Background* background script loaded !");
 
 // ================| ANALYTICS |================
 
-const sessionStorage = window.localStorage;
-
-Mediator.subscribe("sessionGetItem", (data, sender) => {
-    const { id, key } = data;
-
-    Mediator.publish(`sessionItem(${id},${key})`, {
-        item: sessionStorage.getItem(key)
-    }, sender?.tab?.id);
-
-});
-
-Mediator.subscribe("sessionSetItem", (data) => {
-    const { key, value } = data;
-    sessionStorage.setItem(key, value);
-});
-
 setTimeout(() => {
-    window.umami.trackEvent(`Version ${VERSION}`, Events.data);
+    window.umami.trackEvent(`SyncShare v${VERSION}`, { type: "activity" });
 }, 3000);
 
 
