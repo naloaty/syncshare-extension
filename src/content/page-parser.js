@@ -2,6 +2,14 @@ import { log } from "@/core/log";
 
 const PageParser = (() => {
 
+    const select = (args) => {
+        for (let arg of args) {
+            if (arg != null) {
+                return arg
+            }
+        }
+    }
+
     /* attemptId, quizId */
     const parseUrl = () => {
         const url = new URL(window.location.href);
@@ -38,18 +46,84 @@ const PageParser = (() => {
         return result;
     }
 
+    /* courseId, quizId */
+    const parseBodyClasses = () => {
+        const extract = (klass) => {
+            const pos = klass.indexOf("-")
+            return klass.slice(pos + 1)
+        }
+
+        const body = document.querySelector("body");
+        const result = {};
+
+        for (let klass of body.classList) {
+            if (klass.startsWith("course-")) {
+                result.courseId = parseInt(extract(klass));
+            }
+            else if (klass.startsWith("cmid-")) {
+                result.quizId = parseInt(extract(klass));
+            }
+        }
+
+        return result;
+    }
+
+    /* quizName */
+    const parseWindowTitle = () => {
+        const result = {};
+        const isReview = document.querySelector("#page-mod-quiz-review")
+        const title = document.querySelector("title").innerText;
+
+        if (isReview) {
+            const pos = title.lastIndexOf(":");
+            result.quizName = title.slice(0, pos);
+        } else {
+            result.quizName = title
+        }
+
+        return result;
+    }
+
+    /* courseName */
+    const parseHeading = () => {
+        const result = {}
+        const heading = document.querySelector("h1")
+
+        if (heading != null) {
+            result.courseName = heading.innerText;
+        }
+
+        return result;
+    }
+
     return {
         getMeta: () => {
             const url = parseUrl();
             const breadcrumb = parseBreadcrumb();
+            const bodyClasses = parseBodyClasses();
+            const windowTitle = parseWindowTitle();
+            const heading = parseHeading();
 
             return {
-                host:       url.host,
-                attemptId:  url.attemptId,
-                quizId:     url.quizId ? url.quizId : breadcrumb.quizId,
-                quizName:   breadcrumb.quizName,
-                courseId:   breadcrumb.courseId,
-                courseName: breadcrumb.courseName,
+                host: url.host,
+                attemptId: url.attemptId,
+                quizId: select([
+                    url.quizId,
+                    breadcrumb.quizId,
+                    bodyClasses.quizId
+                ]),
+                quizName: select([
+                    breadcrumb.quizName,
+                    windowTitle.quizName
+                ]),
+                courseId: select([
+                    breadcrumb.courseId,
+                    bodyClasses.courseId
+                ]),
+                courseName: select([
+                    breadcrumb.courseName,
+                    heading.courseName
+                ])
             };
         }
     }

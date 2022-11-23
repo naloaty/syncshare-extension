@@ -1,6 +1,5 @@
 import Mediator from "@/core/transport.js";
 import QuestionHandler from "@/content/question-handler.js";
-import "@/core/umami.js";
 import PageMeta from "@/content/page-parser";
 import { log } from "@/core/log";
 import * as MSG from "@/content/messages";
@@ -22,11 +21,9 @@ if (meta.state === "review") {
         qdata: QuestionHandler.collectData(),
     });
 
-    Mediator.publish("checkForModal", { 
-        attemptId: meta.attemptId
-    });
+    Mediator.publish("check-donation", { attemptId: meta.attemptId });
     
-    Mediator.subscribe("checkForModal", data => {
+    Mediator.subscribe("check-donation-result", data => {
         if (data.show) {
             MSG.showDonationMessage(settings => settings.reviewDelay, "review");
         }

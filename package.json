@@ -1,11 +1,11 @@
 {
     "name": "syncshare-extension",
-    "version": "0.1.11",
+    "version": "0.1.12",
     "description": "Moodle assist",
     "main": "index.js",
     "scripts": {
-        "buildDev:chrome": "cross-env ENV_FILE='.env.dev' npx webpack --config browsers/chrome/webpack/webpack.dev.js",
-        "buildDev:firefox": "cross-env ENV_FILE='.env.dev' npx webpack --config browsers/firefox/webpack/webpack.dev.js",
+        "buildDev:chrome": "cross-env NODE_ENV='development' ENV_FILE='.env.dev' npx webpack --config browsers/chrome/webpack/webpack.dev.js",
+        "buildDev:firefox": "cross-env NODE_ENV='development' ENV_FILE='.env.dev' npx webpack --config browsers/firefox/webpack/webpack.dev.js",
         "build:chrome": "npx webpack --config browsers/chrome/webpack/webpack.prod.js",
         "build:firefox": "npx webpack --config browsers/firefox/webpack/webpack.prod.js"
     },
@@ -37,6 +37,7 @@
     "dependencies": {
         "axios": "^0.24.0",
         "dotenv": "^10.0.0",
+        "hotkeys-js": "^3.10.1",
         "modal-vanilla": "^0.9.0"
     }
 }

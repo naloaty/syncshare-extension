@@ -1,7 +1,7 @@
 /browsers/*/distr
 
 .env
-.env.*
+.env.dev
 
 /node_modules/
 

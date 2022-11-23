@@ -19,9 +19,6 @@ const onClick = (ev) => {
             });
         });
     }, 500);
-
-    dndArrow.removeEventListener("click", setHook);
-    btnAdd.removeEventListener("click", setHook);
 }
 
 const submitButton = document.querySelector("form[action*=\"mod/quiz/processattempt.php\"] > button[type=\"submit\"]");

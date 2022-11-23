@@ -7,27 +7,24 @@ log("*View* content script loaded !");
 const url = new URL(document.referrer);
 const attemptId = parseInt(url.searchParams.get("attempt"));
 
-Mediator.publish("checkForModal", { 
-    attemptId: attemptId
-});
+Mediator.publish("check-donation", { attemptId: attemptId });
+Mediator.publish("check-version", {});
+Mediator.publish("check-status", {});
 
-Mediator.subscribe("checkForModal", data => {
+
+Mediator.subscribe("check-donation-result", data => {
     if (data.show) {
         MSG.showDonationMessage(settings => settings.viewDelay, "view");
     }
 });
 
-Mediator.publish("is-outdated", {});
-
-Mediator.subscribe("is-outdated-response", data => {
+Mediator.subscribe("check-version-result", data => {
     if (data.outdated) {
         MSG.showOutdatedMessage(settings => settings.viewDelay, "view");
     }
 });
 
-Mediator.publish("check-status", {});
-
-Mediator.subscribe("check-status-response", data => {
+Mediator.subscribe("check-status-result", data => {
     if (data.offline) {
         MSG.showStatusMessage(settings => settings.viewDelay, "view");
     }

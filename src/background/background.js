@@ -89,33 +89,6 @@ Mediator.subscribe("sol-request", (request, sender) => {
 
 const messages = {
     content: {
-        donation: {
-            title: "SyncShare",
-            content: "Расширение оказалось полезным или помогло решить тест?\nПоддержите дальнейшую работу и развите проекта!",
-            construct: true,
-            keyboard: false,
-            backdrop: "static",
-            headerClose: false,
-            buttons: [
-                {
-                    text: "Закрыть",
-                    value: false,
-                    attr: {
-                        "class": "btn btn-default",
-                        "data-dismiss": "modal"
-                    }
-                },
-                {
-                    text: "Поддержать",
-                    value: true,
-                    url: "https://syncshare.naloaty.me/#donation",
-                    attr: {
-                        "class": "btn btn-primary",
-                        "data-dismiss": "modal"
-                    }
-                }
-            ]
-        },
         outdated: {
             title: "SyncShare",
             content: "Установленная версия расширения устарела и более не поддерживается. Обновите SyncShare до актуальной версии",
@@ -163,12 +136,6 @@ const messages = {
         }
     },
     settings: {
-        donation: {
-            menuOpenRatio: 0.6,
-            magicUseRatio: 0.2,
-            viewDelay: 3000,
-            reviewDelay: 5000
-        },
         outdated: {
             viewDelay: 500
         },
@@ -178,7 +145,12 @@ const messages = {
     }
 }
 
-setTimeout(() => {
+
+Mediator.subscribe("get-messages", (data, sender) => {
+    Mediator.publish("get-messages-result", messages, sender.tab.id);
+});
+
+Mediator.subscribe("update-messages", (data, sender) => {
     axios.get(api.service.messages, {
         params: {
             ...serviceProperties
@@ -193,19 +165,18 @@ setTimeout(() => {
 
             messages.content = result.content;
             messages.settings = result.settings;
+
+            Mediator.publish("on-messages-updated", messages, sender.tab.id);
+            log("Messages updated", messages);
         })
         .catch(error => {
             log("Cannot update modal messages", error);
         });
-}, 5000);
-
-Mediator.subscribe("get-messages", (data, sender) => {
-    Mediator.publish("get-messages-response", messages, sender.tab.id);
 });
 
 // ================| SYNCSHARE UPDATE |================
 
-Mediator.subscribe("is-outdated", (data, sender) => {
+Mediator.subscribe("check-version", (data, sender) => {
     axios.get(api.service.update, {
         params: {
             ...serviceProperties
@@ -222,11 +193,10 @@ Mediator.subscribe("is-outdated", (data, sender) => {
                 return;
             }
 
-            Mediator.publish("is-outdated-response", result, sender.tab.id);
+            Mediator.publish("check-version-result", result, sender.tab.id);
         })
         .catch(error => {
             log("Cannot check for update", error);
-            Mediator.publish("is-outdated-response", { outdated: false }, sender.tab.id);
         });
 });
 
@@ -248,13 +218,10 @@ Mediator.subscribe("check-status", (data, sender) => {
                 return;
             }
 
-            Mediator.publish("check-status-response", result.status, sender.tab.id);
+            Mediator.publish("check-status-result", result.status, sender.tab.id);
         })
         .catch(error => {
             log("Cannot check SyncShare status", error);
-            Mediator.publish("check-status-response", {
-                offline: true
-            }, sender.tab.id);
         });
 });
 
@@ -269,15 +236,9 @@ const register = (attemptId) => {
     attempts[attemptId] = {
         magicUsed: 0,
         menuOpened: 0,
-        menuAttached: 0,
-        showModal: false
+        showDonation: false
     }
 }
-
-Mediator.subscribe("msg-settings-update", data => {
-    register(data.attemptId);
-    attempts[data.attemptId].magicUsed += 1;
-});
 
 Mediator.subscribe("magic-used", data => {
     register(data.attemptId);
@@ -289,32 +250,30 @@ Mediator.subscribe("menu-opened", data => {
     attempts[data.attemptId].menuOpened += 1;
 });
 
-Mediator.subscribe("menu-attached", data => {
-    register(data.attemptId);
-    attempts[data.attemptId].menuAttached += 1;
-});
-
 Mediator.subscribe("submitted", data => {
     register(data.attemptId);
 
     const stats = attempts[data.attemptId];
-    const openRatio = stats.menuOpened / stats.menuAttached;
-    const useRatio = stats.magicUsed / stats.menuAttached;
 
-    const openMin = messages.settings.donation.menuOpenRatio;
-    const magicMin = messages.settings.donation.magicUseRatio;
+    if (messages.settings.donation != null) {
+        const settings = messages.settings.donation
+        const openMin = settings.menuOpened;
+        const useMin = settings.magicUsed;
 
-    if (openRatio >= openMin || useRatio >= magicMin) {
-        stats.showModal = true;
+        if (stats.menuOpened >= openMin && stats.magicUsed >= useMin) {
+            stats.showDonation = true;
+        }
     }
 });
 
-Mediator.subscribe("checkForModal", (data, sender) => {
+Mediator.subscribe("check-donation", (data, sender) => {
     const stats = attempts[data.attemptId];
 
-    Mediator.publish("checkForModal", { show: stats.showModal }, sender.tab.id);
+    Mediator.publish("check-donation-result", { show: stats.showDonation }, sender.tab.id);
 
-    if (stats.showModal) {
-        stats.showModal = false;
+    if (stats.showDonation) {
+        stats.magicUsed = 0;
+        stats.menuOpened = 0;
+        stats.showDonation = false;
     }
 });

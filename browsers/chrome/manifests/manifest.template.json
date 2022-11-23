@@ -17,8 +17,7 @@
             ],
             "include_globs": [
                 "*mod/quiz/attempt.php*",
-                "*mod/quiz/review.php*",
-                "*mod/quiz/view.php*"
+                "*mod/quiz/review.php*"
             ],
             "js": [
                 "quiz-content.js"

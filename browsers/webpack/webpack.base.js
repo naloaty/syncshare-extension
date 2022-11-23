@@ -7,7 +7,7 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const rootDir = path.resolve(__dirname, "../../");
 
 dotenv.config({
-    path: path.resolve(rootDir, "browsers", process.env.ENV_FILE ?? ".env")
+    path: path.resolve(rootDir, process.env.ENV_FILE ?? ".env")
 });
 
 const nodeConfig = {

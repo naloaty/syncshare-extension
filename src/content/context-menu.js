@@ -5,6 +5,7 @@
 import Mediator from "@/core/transport.js";
 import { Events } from  "@/core/analytics.js"
 import PageMeta from "@/content/page-parser";
+import hotkeys from 'hotkeys-js';
 
 const attachContextMenu = (() => {
     const contextMenu = document.createElement("ul");
@@ -93,6 +94,29 @@ const attachContextMenu = (() => {
         window.addEventListener("resize", hideOnResize);
     };
 
+    const widgets = [];
+    let keyLock = false;
+
+    hotkeys("esc", {
+        keyup: true,
+        keydown: true,
+    }, (event, handler) => {
+        if (event.type === "keyup") {
+            keyLock = false;
+            return;
+        }
+
+        if (keyLock)
+            return;
+
+        if (event.type === "keydown")
+            keyLock = true;
+
+        for (let widget of widgets) {
+            widget.classList.toggle("widget-hidden");
+        }
+    })
+
     return (el, options) => {
         el.setAttribute("ctx-menu", "true");
         el.addEventListener("click", (e) => {
@@ -105,9 +129,7 @@ const attachContextMenu = (() => {
             showMenu(e, options);
         });
 
-        Mediator.publish("menu-attached", { 
-            attemptId: PageMeta.attemptId
-        });
+        widgets.push(el);
     };
 })();
 
