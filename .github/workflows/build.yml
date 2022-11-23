@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '15.x'
+          node-version: '16.x'
       - run: npm install
       - run: npm run build:chrome
         env:
@@ -26,7 +26,7 @@ jobs:
           ENVIRONMENT: production
           SERVICE_URL: https://syncshare.naloaty.me/api
           ANALYTICS_URL: https://syncshare.naloaty.me/analytics
-          ANALYTICS_ID: 4526d766-2ab3-48f1-b809-69070c5c5305
+          ANALYTICS_ID: ab6d8f75-5bbd-4d1b-b06a-e98e9639c9bf
       - uses: actions/upload-artifact@v2
         with:
           name: chrome-web-store
